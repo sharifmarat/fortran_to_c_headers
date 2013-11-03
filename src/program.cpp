@@ -6,7 +6,8 @@
 #include <boost/program_options/parsers.hpp>
 
 #include "program.h"
-#include "parse.h"
+#include "parser.h"
+#include "generator.h"
 
 namespace f2h
 {
@@ -14,13 +15,13 @@ namespace f2h
 int program(int argc, char **argv)
 {
   std::string inputFile;
-  std::string ouputFile;
+  std::string outputFile;
 
   boost::program_options::options_description options("Program to automatic generation of C headers from Fortran 2003 bindings. Options");
   options.add_options()
       ("help,h", "prints this help")
       ("input,i", boost::program_options::value<std::string>(&inputFile), "input fortran file")
-      ("output,o", boost::program_options::value<std::string>(&ouputFile), "generated header file");
+      ("output,o", boost::program_options::value<std::string>(&outputFile), "generated header file");
 
   boost::program_options::variables_map vm;
   boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options), vm);
@@ -46,7 +47,11 @@ int program(int argc, char **argv)
     return MISSING_ARGUMENTS;
   }
 
-  std::cout << "From " << inputFile << " to " << ouputFile << std::endl;
+  Parser parser;
+  parser.Parse(inputFile);
+
+  Generator generator;
+  generator.Generate(outputFile);
 
   return SUCCESS;
 }

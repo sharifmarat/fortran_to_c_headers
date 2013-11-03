@@ -1,5 +1,3 @@
-#include <algorithm>
-
 #include "gtest/gtest.h"
 #include "program.h"
 
