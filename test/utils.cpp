@@ -1,0 +1,46 @@
+#include "utils.h"
+#include "gtest/gtest.h"
+
+#include <iostream>
+#include <fstream>
+
+
+namespace f2h_test
+{
+
+
+void compare_files(const std::string &file_name_1, const std::string &file_name_2)
+{
+  std::ifstream in1;
+  in1.open(file_name_1.c_str());
+
+  ASSERT_TRUE(in1.is_open()) << "Can't open file " << file_name_1;
+
+  std::ifstream in2;
+  in2.open(file_name_2.c_str());
+
+  ASSERT_TRUE(in2.is_open()) << "Can't open file " << file_name_2;
+
+  std::string line1, line2;
+
+  while (true)
+  {
+    bool status1 = std::getline(in1, line1);
+    bool status2 = std::getline(in2, line2);
+    ASSERT_EQ(status1, status2) << "Different statuses when comparing " << file_name_1 << " and " << file_name_2;
+    if (!status1 || !status2)
+    {
+      break;
+    }
+    ASSERT_STREQ(line1.c_str(), line2.c_str()) << "Different lines when comparing " << file_name_1 << " and " << file_name_2;
+  }
+
+  ASSERT_TRUE(in1.eof()) << "Finished reading " << file_name_1;
+  ASSERT_TRUE(in2.eof()) << "Finished reading " << file_name_2;
+
+  in1.close();
+  in2.close();
+}
+
+
+};

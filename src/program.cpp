@@ -1,3 +1,5 @@
+#include "program.h"
+
 #include <string>
 #include <iostream>
 
@@ -5,23 +7,22 @@
 #include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
 
-#include "program.h"
 #include "parser.h"
 #include "generator.h"
 
 namespace f2h
 {
 
-int program(int argc, char **argv)
+ProgramResult program(int argc, char **argv)
 {
-  std::string inputFile;
-  std::string outputFile;
+  std::string input_file_name;
+  std::string output_file_name;
 
   boost::program_options::options_description options("Program to automatic generation of C headers from Fortran 2003 bindings. Options");
   options.add_options()
       ("help,h", "prints this help")
-      ("input,i", boost::program_options::value<std::string>(&inputFile), "input fortran file")
-      ("output,o", boost::program_options::value<std::string>(&outputFile), "generated header file");
+      ("input,i", boost::program_options::value<std::string>(&input_file_name), "input fortran file")
+      ("output,o", boost::program_options::value<std::string>(&output_file_name), "generated header file");
 
   boost::program_options::variables_map vm;
   boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options), vm);
@@ -47,11 +48,17 @@ int program(int argc, char **argv)
     return MISSING_ARGUMENTS;
   }
 
-  Parser parser;
-  parser.Parse(inputFile);
+  return program(input_file_name, output_file_name);
+}
 
-  Generator generator;
-  generator.Generate(outputFile);
+
+ProgramResult program(const std::string &input_file_name, const std::string &output_file_name)
+{
+  Parser parser(input_file_name);
+  parser.Parse();
+
+  Generator generator(output_file_name);
+  generator.Generate();
 
   return SUCCESS;
 }

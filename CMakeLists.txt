@@ -11,7 +11,7 @@ project(${PROJECT_NAME} CXX)
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.48.0 COMPONENTS program_options)
+find_package(Boost 1.48.0 COMPONENTS program_options system filesystem)
 if (Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
 else()
@@ -46,8 +46,16 @@ if (BUILD_TESTS)
   file(GLOB TEST_SRC_FILES ${CMAKE_SOURCE_DIR}/test/*.cpp)
   add_executable(${TESTS} ${TEST_SRC_FILES})
   add_dependencies(${TESTS} googletest)
+
+  # copy resources
+  set(COPY_RESOURCES_TARGET "copy_resources")
+  add_custom_target(${COPY_RESOURCES_TARGET}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/resources"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/resources"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/test/resources" "${PROJECT_BINARY_DIR}/resources")
+  add_dependencies(${TESTS} ${COPY_RESOURCES_TARGET})
   
-  
+  # link with google test libs
   if(NOT WIN32)
     #target_link_libraries(${TESTS} pthread)
     target_link_libraries(${TESTS}

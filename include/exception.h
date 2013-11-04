@@ -10,6 +10,14 @@ class NotImplementedException : public std::exception
 {
 };   
 
+class UnableToOpenFileForWritingException : public std::exception
+{
+};
+
+class UnableToOpenFileForReadingException : public std::exception
+{
+};
+
 }
 
 
