@@ -33,12 +33,14 @@ void Generator::Generate()
 
 bool Generator::operator()(ast::identifier const& x)
 {
+  return true;
 }
 
 bool Generator::operator()(ast::function const& x)
 {
   std::cout << "Generator::operator() with ast::function" << std::endl;
   body_ += "void" + x.function_name.name + "();\n";
+  return true;
 }
 
 bool Generator::operator()(ast::function_list const& x)
