@@ -21,6 +21,9 @@ endif()
 # add include dirs
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
+# add spirit debug
+add_definitions(-DBOOST_SPIRIT_DEBUG)
+
 # build library
 file(GLOB_RECURSE LIBRARY_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 message(STATUS "library sources = ${LIBRARY_SOURCES}")

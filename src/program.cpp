@@ -58,6 +58,7 @@ ProgramResult program(const std::string &input_file_name, const std::string &out
   parser.Parse();
 
   Generator generator(output_file_name);
+  generator(parser.GetAst());
   generator.Generate();
 
   return SUCCESS;

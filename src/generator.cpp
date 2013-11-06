@@ -8,7 +8,6 @@
 namespace f2h
 {
 
-
 Generator::Generator(const std::string &out_file_name)
   : out_file_name_(out_file_name)
 {
@@ -30,6 +29,30 @@ void Generator::Generate()
   DumpHeaderEnd();
 
   out_.close();
+}
+
+bool Generator::operator()(ast::identifier const& x)
+{
+}
+
+bool Generator::operator()(ast::function const& x)
+{
+  std::cout << "Generator::operator() with ast::function" << std::endl;
+  body_ += "void" + x.function_name.name + "();\n";
+}
+
+bool Generator::operator()(ast::function_list const& x)
+{
+  std::cout << "Generator::operator() with ast::function_list, size = " << x.size()  << std::endl;
+  for (std::list<ast::function>::const_iterator it = x.begin(); it != x.end(); ++it)
+  {
+    std::cout << "Generator::operator() with ast::function_list in cycle" << std::endl;
+    if (!(*this)(*it))
+    {
+      return false;
+    }
+  }
+  return true;
 }
 
 

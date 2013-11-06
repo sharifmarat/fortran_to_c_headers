@@ -5,6 +5,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "ast.hpp"
+
 namespace f2h
 {
 
@@ -14,16 +16,23 @@ public:
   explicit Generator(const std::string &out_file_name);
   void Generate();
 
+  bool operator()(ast::identifier const& x);
+  bool operator()(ast::function const& x);
+  bool operator()(ast::function_list const& x);
+
 private:
   void DumpHeaderStart() const;
   void DumpHeaderEnd() const;
   std::string GetDefineName() const;
+
+
 
 private:
   Generator();
 
 private:
   std::string out_file_name_;
+  std::string body_;
   mutable std::ofstream out_;
 };
 
