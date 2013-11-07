@@ -10,16 +10,9 @@ template <typename Iterator>
 Grammar<Iterator>::Grammar()
   : Grammar::base_type(program)
 {
+  operand = (function | expr);
 
-  program = +(function | expr);
-
-  //expression = implicit | id;
-  //implicit = "implicit none";
-  //id = qi::lexeme[ (qi::alpha | '_') >> *(qi::alnum | '_') ];
-
-  //BOOST_SPIRIT_DEBUG_NODES(
-  //    (program)
-  //);
+  program = +operand;
 }
 
 }

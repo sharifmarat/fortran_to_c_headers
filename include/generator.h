@@ -13,19 +13,22 @@ namespace f2h
 class Generator
 {
 public:
-  explicit Generator(const std::string &out_file_name);
-  void Generate();
+  typedef bool result_type;
 
+  explicit Generator(const std::string &out_file_name);
+  void Generate(ast::program const& x);
+
+  bool operator()(ast::nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::identifier const& x);
+  bool operator()(ast::expression const& x);
   bool operator()(ast::function const& x);
-  bool operator()(ast::function_list const& x);
+  bool operator()(ast::program const& x);
 
 private:
+
   void DumpHeaderStart() const;
   void DumpHeaderEnd() const;
   std::string GetDefineName() const;
-
-
 
 private:
   Generator();

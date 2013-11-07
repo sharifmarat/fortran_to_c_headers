@@ -3,6 +3,7 @@
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
+#include <boost/variant/recursive_variant.hpp>
 #include <list>
 
 
@@ -19,14 +20,21 @@ struct tagged
 };
 
 struct nil {};
-struct unary;
 struct expression;
+struct function;
 
 struct identifier : tagged
 {
   identifier(std::string const& name = "") : name(name) {}
   std::string name;
 };
+
+typedef boost::variant<
+      nil
+    , expression
+    , function
+  >
+operand;
 
 struct expression
 {
@@ -40,7 +48,7 @@ struct function
   expression expr;
 };
 
-typedef std::list<function> function_list;
+typedef std::list<operand> program;
 
 // print functions for debugging
 inline std::ostream& operator<<(std::ostream& out, nil)
@@ -68,6 +76,5 @@ BOOST_FUSION_ADAPT_STRUCT(
   (f2h::ast::identifier, function_name)
   (f2h::ast::expression, expr)
 )
-
 
 #endif //F2H_AST_HPP

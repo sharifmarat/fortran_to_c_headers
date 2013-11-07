@@ -3,6 +3,7 @@
 
 #include "expression.hpp"
 #include "function.hpp"
+#include "ast.hpp"
 
 namespace f2h
 {
@@ -11,13 +12,15 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 
 template <typename Iterator>
-struct Grammar : qi::grammar<Iterator, ascii::space_type>
+struct Grammar : qi::grammar<Iterator, ast::program(), ascii::space_type>
 {
   Grammar();
 
-  qi::rule<Iterator, ascii::space_type> program;
   Function<Iterator> function;
   Expression<Iterator> expr;
+
+  qi::rule<Iterator, ast::operand(), ascii::space_type> operand;
+  qi::rule<Iterator, ast::program(), ascii::space_type> program;
 };
 
 

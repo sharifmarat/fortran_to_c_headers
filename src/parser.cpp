@@ -32,9 +32,7 @@ void Parser::Parse()
 
     std::string::const_iterator iter = line.begin();
     std::string::const_iterator end = line.end();
-    //bool parse_status = phrase_parse(iter, end, grammar_, space_, ast_);
-    bool parse_status = phrase_parse(iter, end, +grammar_, space_, ast_);
-    std::cout << "!!!!!!!!!!\n ast size = " << ast_.size() << "\n";
+    bool parse_status = phrase_parse(iter, end, grammar_, space_, ast_);
 
     if (!parse_status || iter != end)
     {

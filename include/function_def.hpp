@@ -25,9 +25,9 @@ Function<Iterator>::Function()
         > identifier
         > expr;
 
-  BOOST_SPIRIT_DEBUG_NODES(
-      (start)
-      );
+  //BOOST_SPIRIT_DEBUG_NODES(
+  //    (start)
+  //    );
 
 }
 

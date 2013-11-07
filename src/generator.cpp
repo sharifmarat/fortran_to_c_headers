@@ -1,7 +1,9 @@
 #include "generator.h"
 
+#include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/variant/apply_visitor.hpp>
 
 #include "exception.h"
 
@@ -13,8 +15,12 @@ Generator::Generator(const std::string &out_file_name)
 {
 }
 
-void Generator::Generate()
+void Generator::Generate(ast::program const& x)
 {
+  // process grammar
+  (*this)(x);
+
+  // dump to file
   out_.open(out_file_name_.c_str(), std::ios_base::out | std::ios_base::trunc);
 
   if (!out_.is_open())
@@ -24,7 +30,7 @@ void Generator::Generate()
 
   DumpHeaderStart();
 
-  //TODO
+  if (!body_.empty()) out_ << body_ << "\n";
   
   DumpHeaderEnd();
 
@@ -35,28 +41,31 @@ bool Generator::operator()(ast::identifier const& x)
 {
   return true;
 }
-
-bool Generator::operator()(ast::function const& x)
+  
+bool Generator::operator()(ast::expression const& x)
 {
-  std::cout << "Generator::operator() with ast::function" << std::endl;
-  body_ += "void" + x.function_name.name + "();\n";
   return true;
 }
 
-bool Generator::operator()(ast::function_list const& x)
+bool Generator::operator()(ast::function const& x)
 {
-  std::cout << "Generator::operator() with ast::function_list, size = " << x.size()  << std::endl;
-  for (std::list<ast::function>::const_iterator it = x.begin(); it != x.end(); ++it)
+  body_ += "void " + x.function_name.name + "();\n";
+  return true;
+}
+
+bool Generator::operator()(ast::program const& x)
+{
+
+  BOOST_FOREACH(ast::operand const &o, x)
   {
-    std::cout << "Generator::operator() with ast::function_list in cycle" << std::endl;
-    if (!(*this)(*it))
+    if (!boost::apply_visitor(*this, o))
     {
       return false;
     }
   }
   return true;
 }
-
+  
 
 void Generator::DumpHeaderStart() const
 {
