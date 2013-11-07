@@ -30,7 +30,7 @@ void Generator::Generate(ast::program const& x)
 
   DumpHeaderStart();
 
-  if (!body_.empty()) out_ << body_ << "\n";
+  if (!body_.empty()) out_ << body_;
   
   DumpHeaderEnd();
 
@@ -49,7 +49,7 @@ bool Generator::operator()(ast::expression const& x)
 
 bool Generator::operator()(ast::function const& x)
 {
-  body_ += "void " + x.function_name.name + "();\n";
+  body_ += "void " + x.function_name.name + "();\n\n";
   return true;
 }
 

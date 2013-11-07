@@ -1,13 +1,14 @@
 #include "utils.h"
+#include "program.h"
 #include "gtest/gtest.h"
 
+#include <boost/filesystem.hpp>
 #include <iostream>
 #include <fstream>
 
 
 namespace f2h_test
 {
-
 
 void compare_files(const std::string &file_name_1, const std::string &file_name_2)
 {
@@ -40,6 +41,15 @@ void compare_files(const std::string &file_name_1, const std::string &file_name_
 
   in1.close();
   in2.close();
+}
+
+void run_program_and_compare_files(const std::string &in_file, const std::string &expected_out_file)
+{
+  boost::filesystem::path actual_out_file = boost::filesystem::path(expected_out_file).parent_path() / "result.h";
+  f2h::ProgramResult result = f2h::program(in_file, actual_out_file.string());
+  ASSERT_EQ(f2h::SUCCESS, result) << "program has not been successfully completed";
+
+  compare_files(expected_out_file, actual_out_file.string());
 }
 
 
