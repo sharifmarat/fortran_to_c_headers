@@ -108,6 +108,10 @@ bool Generator::operator()(ast::VariableDeclarationSimple const& x)
         {
           (*argument_it).type = "double";
         }
+        else if (x.keyword.find("typec_ptr") == 0)
+        {
+          (*argument_it).type = "void*";
+        }
         else
         {
           //TODO
@@ -152,6 +156,10 @@ bool Generator::operator()(ast::VariableDeclarationExtended const& x)
         else if (x.keyword.find("real") == 0)
         {
           (*argument_it).type = "double";
+        }
+        else if (x.keyword.find("typec_ptr") == 0)
+        {
+          (*argument_it).type = "void*";
         }
         else
         {
