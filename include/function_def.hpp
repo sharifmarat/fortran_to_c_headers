@@ -34,10 +34,10 @@ Function<Iterator>::Function()
         > "bind" > '(' > 'c' > -(',' > string("name") > '=' > const_char_expr) > ')'
         ;
 
-  BOOST_SPIRIT_DEBUG_NODES(
-      //(start)
-      (argument_list)
-      );
+  //BOOST_SPIRIT_DEBUG_NODES(
+  //    (start)
+  //    (argument_list)
+  //    );
 
 }
 

@@ -22,13 +22,20 @@ struct Tagged
 struct Nil {};
 struct Other;
 struct Function;
-struct VariableDeclaration;
+struct VariableDeclarationSimple;
+struct VariableDeclarationExtended;
 
 struct Identifier : Tagged
 {
   Identifier(std::string const& name = "") : name(name) {}
   std::string name;
 };
+
+typedef boost::variant<
+      VariableDeclarationSimple
+    , VariableDeclarationExtended
+  >
+VariableDeclaration;
 
 typedef boost::variant<
       Nil
@@ -38,15 +45,26 @@ typedef boost::variant<
   >
 ProgramBlock;
 
+typedef unsigned int Kind;
+
 struct Other
 {
   std::string value;
 };
 
-struct VariableDeclaration
+struct VariableDeclarationSimple
 {
+  std::string keyword;
   std::list<Identifier> variables;
 };
+
+struct VariableDeclarationExtended
+{
+  std::string keyword;
+  std::list<std::string> attributes;
+  std::list<Identifier> variables;
+};
+
 
 struct Function
 {
@@ -79,7 +97,15 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-  f2h::ast::VariableDeclaration,
+  f2h::ast::VariableDeclarationSimple,
+  (std::string, keyword)
+  (std::list<f2h::ast::Identifier>, variables)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  f2h::ast::VariableDeclarationExtended,
+  (std::string, keyword)
+  (std::list<std::string>, attributes)
   (std::list<f2h::ast::Identifier>, variables)
 )
 

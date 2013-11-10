@@ -10,9 +10,9 @@ template <typename Iterator>
 Grammar<Iterator>::Grammar()
   : Grammar::base_type(program)
 {
-  program_block = (function | other | var_decl);
+  program_block = (function | var_decl | other);
 
-  program = +program_block;
+  program = program_block;
 }
 
 }

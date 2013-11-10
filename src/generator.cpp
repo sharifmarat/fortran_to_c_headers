@@ -30,7 +30,20 @@ void Generator::Generate(ast::Program const& x)
 
   DumpHeaderStart();
 
-  if (!body_.empty()) out_ << body_;
+  for (std::list<Function>::const_iterator it = functions_.begin(); it != functions_.end(); ++it)
+  {
+    const Function& function = *it;
+    body_ += function.return_value + " " + function.name + "(";
+    for (std::list<Argument>::const_iterator argument_it = function.argument_list.begin(); argument_it != function.argument_list.end(); ++argument_it)
+    {
+      if (argument_it != function.argument_list.begin()) body_ += ", ";
+      const Argument& argument = *argument_it;
+      body_ += argument.type + " " + argument.name;
+    }
+    body_ += ");\n\n";
+  }
+
+  out_ << body_;
   
   DumpHeaderEnd();
 
@@ -39,7 +52,6 @@ void Generator::Generate(ast::Program const& x)
 
 bool Generator::operator()(ast::Identifier const& x)
 {
-  body_ += x.name;
   return true;
 }
   
@@ -48,29 +60,117 @@ bool Generator::operator()(ast::Other const& x)
   return true;
 }
   
+bool Generator::operator()(ast::Function const& x)
+{
+  Function new_function;
+  new_function.return_value = "void";
+  new_function.name = x.function_name.name;
+  for (std::list<ast::Identifier>::const_iterator it = x.argument_list.begin(); it != x.argument_list.end(); ++it)
+  {
+    Argument arg;
+    arg.type = "void";
+    arg.name = (*it).name;
+    new_function.argument_list.push_back(arg);
+    std::cout << "pushing " << (*it).name << " into " << x.function_name.name << "\n";
+  }
+
+  functions_.push_back(new_function);
+  return true;
+}
+  
 bool Generator::operator()(ast::VariableDeclaration const& x)
 {
+  if (!boost::apply_visitor(*this, x))
+  {
+    return false;
+  }
   return true;
 }
 
-bool Generator::operator()(ast::Function const& x)
+bool Generator::operator()(ast::VariableDeclarationSimple const& x)
 {
-  body_ += "void " + x.function_name.name + "(";
-  for (std::list<ast::Identifier>::const_iterator it = x.argument_list.begin(); it != x.argument_list.end(); ++it)
+  std::cout << "ast::VariableDeclarationSimple " << x.keyword << " vars = \n";
+  for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
   {
-    if (it != x.argument_list.begin()) body_ += ", ";
-    if (!(*this)(*it))
+    std::cout << (*it).name << "\n";
+
+    if (!functions_.empty())
     {
-      return false;
+      Function& current_function = functions_.back();
+      std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
+      if (argument_it != current_function.argument_list.end())
+      {
+        if (x.keyword.find("integer") == 0)
+        {
+          (*argument_it).type = "int";
+        }
+        else if (x.keyword.find("real") == 0)
+        {
+          (*argument_it).type = "double";
+        }
+        else
+        {
+          //TODO
+          std::cout << "!!! unable to map keyword = `" << x.keyword << "'\n";
+        }
+      }
+      else
+      {
+        std::cout << "!!! unable to find " << (*it).name << "\n";
+      }
     }
   }
-  body_ += ");\n\n";
+  std::cout << "\n";
+
+
+
+  return true;
+}
+
+bool Generator::operator()(ast::VariableDeclarationExtended const& x)
+{
+  std::cout << "ast::VariableDeclarationExtended " << x.keyword << " attrs = ";
+  for (std::list<std::string>::const_iterator it = x.attributes.begin(); it != x.attributes.end(); ++it)
+  {
+    std::cout << *it << " ";
+  }
+  std::cout << " vars = \n";
+  for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
+  {
+    std::cout << (*it).name << "\n";
+
+    if (!functions_.empty())
+    {
+      Function& current_function = functions_.back();
+      std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
+      if (argument_it != current_function.argument_list.end())
+      {
+        if (x.keyword.find("integer") == 0)
+        {
+          (*argument_it).type = "int";
+        }
+        else if (x.keyword.find("real") == 0)
+        {
+          (*argument_it).type = "double";
+        }
+        else
+        {
+          //TODO
+          std::cout << "!!! unable to map keyword = `" << x.keyword << "'\n";
+        }
+      }
+      else
+      {
+        std::cout << "!!! unable to find " << (*it).name << "\n";
+      }
+    }
+  }
+  std::cout << "\n";
   return true;
 }
 
 bool Generator::operator()(ast::Program const& x)
 {
-
   BOOST_FOREACH(ast::ProgramBlock const& o, x)
   {
     if (!boost::apply_visitor(*this, o))

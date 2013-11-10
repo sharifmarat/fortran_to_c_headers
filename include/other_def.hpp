@@ -17,10 +17,17 @@ Other<Iterator>::Other()
   keywords.add
     ("function")
     ("subroutine")
+    ("integer")
+    ("real")
+    ("complex")
+    ("logical")
+    ("character")
+    ("byte")
     ;
 
   expr =
-    !qi::lexeme[keywords >> !(alnum | '_')] >> +char_;
+      (!qi::lexeme[keywords >> !(alnum | '_')] >> +char_)
+    //| qi::eps
     ;
 
   //BOOST_SPIRIT_DEBUG_NODES(

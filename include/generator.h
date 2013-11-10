@@ -2,6 +2,8 @@
 #define F2H_GENERATOR_H
 
 #include <string>
+#include <map>
+#include <list>
 #include <iostream>
 #include <fstream>
 
@@ -20,9 +22,11 @@ public:
 
   bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::Identifier const& x);
-  bool operator()(ast::VariableDeclaration const& x);
   bool operator()(ast::Other const& x);
   bool operator()(ast::Function const& x);
+  bool operator()(ast::VariableDeclaration const& x);
+  bool operator()(ast::VariableDeclarationSimple const& x);
+  bool operator()(ast::VariableDeclarationExtended const& x);
   bool operator()(ast::Program const& x);
 
 private:
@@ -31,6 +35,28 @@ private:
   void DumpHeaderEnd() const;
   std::string GetDefineName() const;
 
+  struct Argument
+  {
+    std::string name;
+    std::string type;
+  };
+
+  struct Function
+  {
+    std::string return_value;
+    std::string name;
+    std::list<Argument> argument_list;
+    std::list<Argument>::iterator find_argument(const std::string& name)
+    {
+      for (std::list<Argument>::iterator it = argument_list.begin(); it != argument_list.end(); ++it)
+      {
+        if ((*it).name == name) return it;
+      }
+      return argument_list.end();
+    }
+  };
+
+
 private:
   Generator();
 
@@ -38,6 +64,7 @@ private:
   std::string out_file_name_;
   std::string body_;
   mutable std::ofstream out_;
+  std::list<Function> functions_;
 };
 
 
