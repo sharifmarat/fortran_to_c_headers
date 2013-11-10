@@ -1,4 +1,4 @@
-#include "expression.hpp"
+#include "other.hpp"
 #include <boost/spirit/include/phoenix_function.hpp>
 #include <boost/spirit/include/qi_no_case.hpp>
 
@@ -8,8 +8,8 @@ namespace f2h
 {
 
 template <typename Iterator>
-Expression<Iterator>::Expression()
-  : Expression::base_type(expr)
+Other<Iterator>::Other()
+  : Other::base_type(expr)
 {
   qi::char_type char_;
   qi::alnum_type alnum;

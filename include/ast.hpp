@@ -20,7 +20,7 @@ struct Tagged
 };
 
 struct Nil {};
-struct Expression;
+struct Other;
 struct Function;
 struct VariableDeclaration;
 
@@ -32,13 +32,13 @@ struct Identifier : Tagged
 
 typedef boost::variant<
       Nil
-    , Expression
+    , Other
     , Function
     , VariableDeclaration
   >
 ProgramBlock;
 
-struct Expression
+struct Other
 {
   std::string value;
 };
@@ -74,7 +74,7 @@ inline std::ostream& operator<<(std::ostream& out, Identifier const& id)
 }
 
 BOOST_FUSION_ADAPT_STRUCT(
-  f2h::ast::Expression,
+  f2h::ast::Other,
   (std::string, value)
 )
 

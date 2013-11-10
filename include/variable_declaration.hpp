@@ -26,4 +26,4 @@ struct VariableDeclaration : qi::grammar<Iterator, ast::VariableDeclaration(), a
 }
 
 
-#endif //F2H_EXPRESSION_HPP
+#endif //F2H_VARIABLE_DECLARATION_HPP

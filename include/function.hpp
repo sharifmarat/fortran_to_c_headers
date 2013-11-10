@@ -2,7 +2,7 @@
 #define F2H_FUNCTION_HPP
 
 #include "ast.hpp"
-#include "expression.hpp"
+#include "other.hpp"
 
 namespace f2h
 {
@@ -25,7 +25,7 @@ struct Function : qi::grammar<Iterator, ast::Function(), ascii::space_type>
 
   qi::rule<Iterator, std::string(), ascii::space_type> const_char_expr;
 
-  Expression<Iterator> expr;
+  Other<Iterator> other;
   
   // TODO statements
 };

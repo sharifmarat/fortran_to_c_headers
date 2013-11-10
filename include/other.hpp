@@ -1,5 +1,5 @@
-#ifndef F2H_EXPRESSION_HPP
-#define F2H_EXPRESSION_HPP
+#ifndef F2H_OTHER_HPP
+#define F2H_OTHER_HPP
 
 #include <boost/spirit/include/qi.hpp>
 #include <vector>
@@ -13,11 +13,11 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 
 template <typename Iterator>
-struct Expression : qi::grammar<Iterator, ast::Expression(), ascii::space_type>
+struct Other : qi::grammar<Iterator, ast::Other(), ascii::space_type>
 {   
-  Expression();
+  Other();
 
-  qi::rule<Iterator, ast::Expression(), ascii::space_type> expr;
+  qi::rule<Iterator, ast::Other(), ascii::space_type> expr;
 
   qi::symbols<char> keywords;
 };
@@ -26,4 +26,4 @@ struct Expression : qi::grammar<Iterator, ast::Expression(), ascii::space_type>
 }
 
 
-#endif //F2H_EXPRESSION_HPP
+#endif //F2H_OTHER_HPP

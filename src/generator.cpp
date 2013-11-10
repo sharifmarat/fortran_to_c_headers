@@ -43,7 +43,7 @@ bool Generator::operator()(ast::Identifier const& x)
   return true;
 }
   
-bool Generator::operator()(ast::Expression const& x)
+bool Generator::operator()(ast::Other const& x)
 {
   return true;
 }

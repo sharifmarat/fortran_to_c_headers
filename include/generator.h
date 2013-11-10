@@ -21,7 +21,7 @@ public:
   bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::Identifier const& x);
   bool operator()(ast::VariableDeclaration const& x);
-  bool operator()(ast::Expression const& x);
+  bool operator()(ast::Other const& x);
   bool operator()(ast::Function const& x);
   bool operator()(ast::Program const& x);
 

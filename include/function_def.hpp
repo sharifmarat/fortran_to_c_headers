@@ -18,7 +18,7 @@ Function<Iterator>::Function()
   qi::lexeme_type lexeme;
   qi::char_type char_;
 
-  name = !expr.keywords >> raw[lexeme[(alpha | '_') >> *(alnum | '_')]];
+  name = !other.keywords >> raw[lexeme[(alpha | '_') >> *(alnum | '_')]];
 
   identifier = name;
 
