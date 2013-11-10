@@ -17,7 +17,7 @@ class Parser
 public:
   Parser(const std::string &in_file_name);
   void Parse();
-  const f2h::ast::program &GetAst() const { return ast_; }
+  const f2h::ast::Program &GetAst() const { return ast_; }
 private:
 private:
   std::string in_file_name_;
@@ -25,7 +25,7 @@ private:
 
   boost::spirit::ascii::space_type space_;
   Grammar<std::string::const_iterator> grammar_;
-  f2h::ast::program ast_;
+  f2h::ast::Program ast_;
 };
 
 }

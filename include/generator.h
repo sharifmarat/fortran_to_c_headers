@@ -16,13 +16,14 @@ public:
   typedef bool result_type;
 
   explicit Generator(const std::string &out_file_name);
-  void Generate(ast::program const& x);
+  void Generate(ast::Program const& x);
 
-  bool operator()(ast::nil) { BOOST_ASSERT(0); return false; }
-  bool operator()(ast::identifier const& x);
-  bool operator()(ast::expression const& x);
-  bool operator()(ast::function const& x);
-  bool operator()(ast::program const& x);
+  bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
+  bool operator()(ast::Identifier const& x);
+  bool operator()(ast::VariableDeclaration const& x);
+  bool operator()(ast::Expression const& x);
+  bool operator()(ast::Function const& x);
+  bool operator()(ast::Program const& x);
 
 private:
 

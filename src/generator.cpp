@@ -15,7 +15,7 @@ Generator::Generator(const std::string &out_file_name)
 {
 }
 
-void Generator::Generate(ast::program const& x)
+void Generator::Generate(ast::Program const& x)
 {
   // process grammar
   (*this)(x);
@@ -37,26 +37,41 @@ void Generator::Generate(ast::program const& x)
   out_.close();
 }
 
-bool Generator::operator()(ast::identifier const& x)
+bool Generator::operator()(ast::Identifier const& x)
+{
+  body_ += x.name;
+  return true;
+}
+  
+bool Generator::operator()(ast::Expression const& x)
 {
   return true;
 }
   
-bool Generator::operator()(ast::expression const& x)
+bool Generator::operator()(ast::VariableDeclaration const& x)
 {
   return true;
 }
 
-bool Generator::operator()(ast::function const& x)
+bool Generator::operator()(ast::Function const& x)
 {
-  body_ += "void " + x.function_name.name + "();\n\n";
+  body_ += "void " + x.function_name.name + "(";
+  for (std::list<ast::Identifier>::const_iterator it = x.argument_list.begin(); it != x.argument_list.end(); ++it)
+  {
+    if (it != x.argument_list.begin()) body_ += ", ";
+    if (!(*this)(*it))
+    {
+      return false;
+    }
+  }
+  body_ += ");\n\n";
   return true;
 }
 
-bool Generator::operator()(ast::program const& x)
+bool Generator::operator()(ast::Program const& x)
 {
 
-  BOOST_FOREACH(ast::operand const &o, x)
+  BOOST_FOREACH(ast::ProgramBlock const& o, x)
   {
     if (!boost::apply_visitor(*this, o))
     {

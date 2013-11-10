@@ -16,18 +16,28 @@ Function<Iterator>::Function()
   qi::string_type string;
   qi::raw_type raw;
   qi::lexeme_type lexeme;
+  qi::char_type char_;
 
   name = !expr.keywords >> raw[lexeme[(alpha | '_') >> *(alnum | '_')]];
 
   identifier = name;
 
-  start = qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]  // make sure we have whole words
-        > identifier
-        > expr;
+  argument_list = -(identifier % ',');
 
-  //BOOST_SPIRIT_DEBUG_NODES(
-  //    (start)
-  //    );
+  const_char_expr =   lexeme['"' >> +(char_ - '"') >> '"']
+                    | lexeme['\'' >> +(char_ - '\'') >> '\'']
+                    ;
+
+  start = qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]
+        > identifier
+        > '(' > argument_list > ')'
+        > "bind" > '(' > 'c' > -(',' > string("name") > '=' > const_char_expr) > ')'
+        ;
+
+  BOOST_SPIRIT_DEBUG_NODES(
+      //(start)
+      (argument_list)
+      );
 
 }
 

@@ -12,51 +12,59 @@ namespace f2h
 namespace ast
 {
 
-struct tagged
+struct Tagged
 {
   int id; // Used to annotate the AST with the iterator position.
           // This id is used as a key to a map<int, Iterator>
           // (not really part of the AST.)
 };
 
-struct nil {};
-struct expression;
-struct function;
+struct Nil {};
+struct Expression;
+struct Function;
+struct VariableDeclaration;
 
-struct identifier : tagged
+struct Identifier : Tagged
 {
-  identifier(std::string const& name = "") : name(name) {}
+  Identifier(std::string const& name = "") : name(name) {}
   std::string name;
 };
 
 typedef boost::variant<
-      nil
-    , expression
-    , function
+      Nil
+    , Expression
+    , Function
+    , VariableDeclaration
   >
-operand;
+ProgramBlock;
 
-struct expression
+struct Expression
 {
   std::string value;
 };
 
-struct function
+struct VariableDeclaration
 {
-  std::string prefix;
-  identifier function_name;
-  expression expr;
+  std::list<Identifier> variables;
 };
 
-typedef std::list<operand> program;
+struct Function
+{
+  std::string prefix;
+  Identifier function_name;
+  std::list<Identifier> argument_list;
+  std::string bind_name;
+};
+
+typedef std::list<ProgramBlock> Program;
 
 // print functions for debugging
-inline std::ostream& operator<<(std::ostream& out, nil)
+inline std::ostream& operator<<(std::ostream& out, Nil)
 {
   out << "nil"; return out;
 }
 
-inline std::ostream& operator<<(std::ostream& out, identifier const& id)
+inline std::ostream& operator<<(std::ostream& out, Identifier const& id)
 {
   out << id.name; return out;
 }
@@ -66,15 +74,21 @@ inline std::ostream& operator<<(std::ostream& out, identifier const& id)
 }
 
 BOOST_FUSION_ADAPT_STRUCT(
-  f2h::ast::expression,
+  f2h::ast::Expression,
   (std::string, value)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-  f2h::ast::function,
+  f2h::ast::VariableDeclaration,
+  (std::list<f2h::ast::Identifier>, variables)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  f2h::ast::Function,
   (std::string, prefix)
-  (f2h::ast::identifier, function_name)
-  (f2h::ast::expression, expr)
+  (f2h::ast::Identifier, function_name)
+  (std::list<f2h::ast::Identifier>, argument_list)
+  (std::string, bind_name)
 )
 
 #endif //F2H_AST_HPP
