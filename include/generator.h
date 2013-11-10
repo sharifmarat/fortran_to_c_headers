@@ -18,7 +18,7 @@ public:
   typedef bool result_type;
 
   explicit Generator(const std::string &out_file_name);
-  void Generate(ast::Program const& x);
+  void Generate(ast::Program const& x, const std::string& define_name);
 
   bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::Identifier const& x);
@@ -31,8 +31,8 @@ public:
 
 private:
 
-  void DumpHeaderStart() const;
-  void DumpHeaderEnd() const;
+  void DumpHeaderStart(const std::string& define_name) const;
+  void DumpHeaderEnd(const std::string& define_name) const;
   std::string GetDefineName() const;
 
   struct Argument

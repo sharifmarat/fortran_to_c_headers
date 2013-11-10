@@ -15,7 +15,7 @@ Generator::Generator(const std::string &out_file_name)
 {
 }
 
-void Generator::Generate(ast::Program const& x)
+void Generator::Generate(ast::Program const& x, const std::string& define_name)
 {
   // process grammar
   (*this)(x);
@@ -28,7 +28,7 @@ void Generator::Generate(ast::Program const& x)
     throw UnableToOpenFileForWritingException();
   }
 
-  DumpHeaderStart();
+  DumpHeaderStart(define_name);
 
   for (std::list<Function>::const_iterator it = functions_.begin(); it != functions_.end(); ++it)
   {
@@ -45,7 +45,7 @@ void Generator::Generate(ast::Program const& x)
 
   out_ << body_;
   
-  DumpHeaderEnd();
+  DumpHeaderEnd(define_name);
 
   out_.close();
 }
@@ -190,10 +190,10 @@ bool Generator::operator()(ast::Program const& x)
 }
   
 
-void Generator::DumpHeaderStart() const
+void Generator::DumpHeaderStart(const std::string& define_name) const
 {
-  out_ << "#ifndef " << GetDefineName() << "\n";
-  out_ << "#define " << GetDefineName() << "\n\n";
+  out_ << "#ifndef " << define_name << "\n";
+  out_ << "#define " << define_name << "\n\n";
   out_ << "#ifdef __cplusplus\n";
   out_ << "extern \"C\"\n";
   out_ << "{\n";
@@ -201,12 +201,12 @@ void Generator::DumpHeaderStart() const
 }
 
 
-void Generator::DumpHeaderEnd() const
+void Generator::DumpHeaderEnd(const std::string& define_name) const
 {
   out_ << "#ifdef __cplusplus\n";
   out_ << "}\n";
   out_ << "#endif\n\n";
-  out_ << "#endif //" << GetDefineName() << "\n";
+  out_ << "#endif //" << define_name << "\n";
 }
   
 std::string Generator::GetDefineName() const

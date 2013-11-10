@@ -14,7 +14,7 @@ enum ProgramResult
 
 ProgramResult program(int argc, char **argv);
 
-ProgramResult program(const std::string &input_file_name, const std::string &output_file_name);
+ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name);
 
 }
 

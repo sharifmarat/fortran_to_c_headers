@@ -9,7 +9,7 @@ TEST(Trivial, EmptyFile)
   std::string expected_file = data_dir + "out.h";
   std::string actual_file = data_dir + "result.h";
 
-  f2h::ProgramResult result = f2h::program(in_file, actual_file);
+  f2h::ProgramResult result = f2h::program(in_file, actual_file, "RESULT_H");
   ASSERT_EQ(f2h::SUCCESS, result) << "program has not been successfully completed";
 
   f2h_test::compare_files(expected_file, actual_file);
