@@ -12,7 +12,12 @@ Grammar<Iterator>::Grammar()
 {
   program_block = (function | var_decl | other);
 
-  program = program_block;
+  program = *program_block;
+
+  BOOST_SPIRIT_DEBUG_NODES(
+      (program_block)
+      );
+
 }
 
 }

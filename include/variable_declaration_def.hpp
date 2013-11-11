@@ -71,18 +71,18 @@ VariableDeclaration<Iterator>::VariableDeclaration()
 
   var_decl_extended = type_spec >> ',' > attribute_list >> string("::") > variable_list;
 
-  var_decl = var_decl_extended | var_decl_simple;
+  var_decl = (var_decl_extended | var_decl_simple) > qi::eol;
 
   BOOST_SPIRIT_DEBUG_NODES(
-  //    (attribute)
-  //    (variable_name)
+      (attribute)
+      (variable_name)
       (type_spec)
-  //    (type_name)
-  //    (attribute_list)
-  //    (variable_list)
-  //    (var_decl_simple)
-  //    (var_decl_extended)
-  //    (var_decl)
+      (type_name)
+      (attribute_list)
+      (variable_list)
+      (var_decl_simple)
+      (var_decl_extended)
+      (var_decl)
       );
 }
 

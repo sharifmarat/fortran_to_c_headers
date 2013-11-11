@@ -8,6 +8,7 @@
 #include "grammar.hpp"
 #include "function.hpp"
 #include "ast.hpp"
+#include "skipper.hpp"
 
 namespace f2h
 {
@@ -23,7 +24,7 @@ private:
   std::string in_file_name_;
   std::ifstream in_;
 
-  boost::spirit::ascii::space_type space_;
+  Skipper<std::string::const_iterator> skipper_;
   Grammar<std::string::const_iterator> grammar_;
   f2h::ast::Program ast_;
 };

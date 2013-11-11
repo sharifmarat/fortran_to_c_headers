@@ -24,18 +24,21 @@ Function<Iterator>::Function()
 
   argument_list = -(identifier % ',');
 
-  const_char_expr =   lexeme['"' >> +(char_ - '"') >> '"']
-                    | lexeme['\'' >> +(char_ - '\'') >> '\'']
+  const_char_expr =   ('"' >> +(char_ - '"') >> '"')
+                    | ('\'' >> +(char_ - '\'') >> '\'')
                     ;
-
+  
   start = qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]
         > identifier
         > '(' > argument_list > ')'
-        > "bind" > '(' > 'c' > -(',' > string("name") > '=' > const_char_expr) > ')'
+        > string("bind") > '(' > 'c' > -(',' > string("name") > '=' > const_char_expr) > ')'
+        > qi::eol
         ;
 
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (start)
+  //    (identifier)
+  //    (const_char_expr)
   //    (argument_list)
   //    );
 

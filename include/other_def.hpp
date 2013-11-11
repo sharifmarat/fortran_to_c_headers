@@ -26,13 +26,12 @@ Other<Iterator>::Other()
     ;
 
   expr =
-      (!qi::lexeme[keywords >> !(alnum | '_')] >> +char_)
-    //| qi::eps
+      ((!qi::lexeme[keywords >> !(alnum | '_')] >> +(char_ - qi::eol)) > qi::eol) | qi::eol
     ;
 
-  //BOOST_SPIRIT_DEBUG_NODES(
-  //    (expr)
-  //    );
+  BOOST_SPIRIT_DEBUG_NODES(
+      (expr)
+      );
 }
 
 

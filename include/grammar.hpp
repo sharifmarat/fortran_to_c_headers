@@ -2,6 +2,7 @@
 #define F2H_GRAMMAR_HPP
 
 #include "other.hpp"
+#include "skipper.hpp"
 #include "variable_declaration.hpp"
 #include "function.hpp"
 #include "ast.hpp"
@@ -10,10 +11,9 @@ namespace f2h
 {
 
 namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
 
 template <typename Iterator>
-struct Grammar : qi::grammar<Iterator, ast::Program(), ascii::space_type>
+struct Grammar : qi::grammar<Iterator, ast::Program(), Skipper<Iterator> >
 {
   Grammar();
 
@@ -21,9 +21,9 @@ struct Grammar : qi::grammar<Iterator, ast::Program(), ascii::space_type>
   Other<Iterator> other;
   VariableDeclaration<Iterator> var_decl;
 
-  qi::rule<Iterator, ast::ProgramBlock(), ascii::space_type> program_block;
+  qi::rule<Iterator, ast::ProgramBlock(), Skipper<Iterator> > program_block;
 
-  qi::rule<Iterator, ast::Program(), ascii::space_type> program;
+  qi::rule<Iterator, ast::Program(), Skipper<Iterator> > program;
 };
 
 

@@ -22,23 +22,39 @@ void Parser::Parse()
     throw UnableToOpenFileForReadingException();
   }
 
-  std::string line;
+  std::string code;
+  in_.unsetf(std::ios::skipws);
+  std::copy(
+      std::istream_iterator<char>(in_),
+      std::istream_iterator<char>(),
+      std::back_inserter(code));
 
-  while (std::getline(in_, line))
+  typedef std::string::const_iterator iterator_type;
+  iterator_type iter = code.begin();
+  iterator_type end = code.end();
+
+  bool parse_status = phrase_parse(iter, end, grammar_, skipper_, ast_);
+  if (!parse_status || iter != end)
   {
-    //TODO: make sure empty lines are skipped in the skipper
-    boost::trim(line);
-    if (line.length() == 0) continue;
-
-    std::string::const_iterator iter = line.begin();
-    std::string::const_iterator end = line.end();
-    bool parse_status = phrase_parse(iter, end, grammar_, space_, ast_);
-
-    if (!parse_status || iter != end)
-    {
-      std::cerr << "parsing error" << std::endl;
-    }
+    std::cerr << "parsing error" << std::endl;
   }
+
+  //std::string line;
+  //while (std::getline(in_, line))
+  //{
+  //  //TODO: make sure empty lines are skipped in the skipper
+  //  boost::trim(line);
+  //  if (line.length() == 0) continue;
+
+  //  std::string::const_iterator iter = line.begin();
+  //  std::string::const_iterator end = line.end();
+  //  bool parse_status = phrase_parse(iter, end, grammar_, space_, ast_);
+
+  //  if (!parse_status || iter != end)
+  //  {
+  //    std::cerr << "parsing error" << std::endl;
+  //  }
+  //}
 
   in_.close();
 }

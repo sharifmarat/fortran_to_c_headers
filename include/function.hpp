@@ -3,27 +3,28 @@
 
 #include "ast.hpp"
 #include "other.hpp"
+#include "skipper.hpp"
 
 namespace f2h
 {
 
 namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
 
 template <typename Iterator>
-struct Function : qi::grammar<Iterator, ast::Function(), ascii::space_type>
+struct Function : qi::grammar<Iterator, ast::Function(), Skipper<Iterator> >
 {   
   Function();
 
-  qi::rule<Iterator, ast::Function(), ascii::space_type> start;
+  qi::rule<Iterator, ast::Function(), Skipper<Iterator> > start;
 
-  qi::rule<Iterator, std::string(), ascii::space_type> name;
+  qi::rule<Iterator, std::string(), Skipper<Iterator> > name;
 
-  qi::rule<Iterator, ast::Identifier(), ascii::space_type> identifier;
+  qi::rule<Iterator, ast::Identifier(), Skipper<Iterator> > identifier;
 
-  qi::rule<Iterator, std::list<ast::Identifier>(), ascii::space_type > argument_list;
+  qi::rule<Iterator, std::list<ast::Identifier>(), Skipper<Iterator>  > argument_list;
 
-  qi::rule<Iterator, std::string(), ascii::space_type> const_char_expr;
+  qi::rule<Iterator, std::string(), Skipper<Iterator> > const_char_expr;
+  //qi::rule<Iterator, ast::Identifier(), Skipper<Iterator> > const_char_expr;
 
   Other<Iterator> other;
   

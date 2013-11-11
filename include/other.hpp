@@ -4,20 +4,20 @@
 #include <boost/spirit/include/qi.hpp>
 #include <vector>
 
+#include "skipper.hpp"
 #include "ast.hpp"
 
 namespace f2h
 {
 
 namespace qi = boost::spirit::qi;
-namespace ascii = boost::spirit::ascii;
 
 template <typename Iterator>
-struct Other : qi::grammar<Iterator, ast::Other(), ascii::space_type>
+struct Other : qi::grammar<Iterator, ast::Other(), Skipper<Iterator> >
 {   
   Other();
 
-  qi::rule<Iterator, ast::Other(), ascii::space_type> expr;
+  qi::rule<Iterator, ast::Other(), Skipper<Iterator> > expr;
 
   qi::symbols<char> keywords;
 };
