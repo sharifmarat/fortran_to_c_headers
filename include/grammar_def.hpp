@@ -10,13 +10,13 @@ template <typename Iterator>
 Grammar<Iterator>::Grammar()
   : Grammar::base_type(program)
 {
-  program_block = (function | var_decl | other);
+  program_block = (modificator | function | var_decl | other);
 
   program = *program_block;
 
-  BOOST_SPIRIT_DEBUG_NODES(
-      (program_block)
-      );
+  //BOOST_SPIRIT_DEBUG_NODES(
+  //    (program_block)
+  //    );
 
 }
 

@@ -6,6 +6,7 @@
 #include "variable_declaration.hpp"
 #include "function.hpp"
 #include "ast.hpp"
+#include "modificator.hpp"
 
 namespace f2h
 {
@@ -20,6 +21,7 @@ struct Grammar : qi::grammar<Iterator, ast::Program(), Skipper<Iterator> >
   Function<Iterator> function;
   Other<Iterator> other;
   VariableDeclaration<Iterator> var_decl;
+  Modificator<Iterator> modificator;
 
   qi::rule<Iterator, ast::ProgramBlock(), Skipper<Iterator> > program_block;
 
