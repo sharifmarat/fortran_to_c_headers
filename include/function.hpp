@@ -24,7 +24,6 @@ struct Function : qi::grammar<Iterator, ast::Function(), Skipper<Iterator> >
   qi::rule<Iterator, std::list<ast::Identifier>(), Skipper<Iterator>  > argument_list;
 
   qi::rule<Iterator, std::string(), Skipper<Iterator> > const_char_expr;
-  //qi::rule<Iterator, ast::Identifier(), Skipper<Iterator> > const_char_expr;
 
   Other<Iterator> other;
   

@@ -37,24 +37,8 @@ void Parser::Parse()
   if (!parse_status || iter != end)
   {
     std::cerr << "parsing error" << std::endl;
+    std::cerr << "please submit an error, if code compiles by fortran compiler" << std::endl;
   }
-
-  //std::string line;
-  //while (std::getline(in_, line))
-  //{
-  //  //TODO: make sure empty lines are skipped in the skipper
-  //  boost::trim(line);
-  //  if (line.length() == 0) continue;
-
-  //  std::string::const_iterator iter = line.begin();
-  //  std::string::const_iterator end = line.end();
-  //  bool parse_status = phrase_parse(iter, end, grammar_, space_, ast_);
-
-  //  if (!parse_status || iter != end)
-  //  {
-  //    std::cerr << "parsing error" << std::endl;
-  //  }
-  //}
 
   in_.close();
 }
