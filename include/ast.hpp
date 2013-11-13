@@ -24,12 +24,25 @@ struct Other;
 struct Function;
 struct VariableDeclarationSimple;
 struct VariableDeclarationExtended;
+struct FunctionCall;
+struct TypeSpecIntrinsic;
+struct TypeSpecType;
 
 struct Identifier : Tagged
 {
   Identifier(std::string const& name = "") : name(name) {}
   std::string name;
 };
+
+typedef boost::variant<
+      Nil
+    , unsigned int
+    , bool
+    , std::string
+    , boost::recursive_wrapper<FunctionCall>
+    , Identifier
+  >
+PrimaryExpression;
 
 typedef boost::variant<
       VariableDeclarationSimple
@@ -45,11 +58,36 @@ typedef boost::variant<
   >
 ProgramBlock;
 
+typedef boost::variant<
+      Nil
+    , TypeSpecIntrinsic
+    , TypeSpecType
+  >
+TypeSpec;
+
 typedef unsigned int Kind;
 
 struct Other
 {
   std::string value;
+};
+
+struct TypeSpecIntrinsic
+{
+  std::string keyword;
+  PrimaryExpression kind;
+};
+
+struct TypeSpecType
+{
+  std::string keyword;
+  std::string type_name;
+};
+
+struct FunctionCall
+{
+  Identifier function_name;
+  std::list<PrimaryExpression> args;
 };
 
 struct VariableDeclarationSimple
@@ -115,6 +153,25 @@ BOOST_FUSION_ADAPT_STRUCT(
   (f2h::ast::Identifier, function_name)
   (std::list<f2h::ast::Identifier>, argument_list)
   (std::string, bind_name)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  f2h::ast::FunctionCall,
+  (f2h::ast::Identifier, function_name)
+  (std::list<f2h::ast::PrimaryExpression>, args)
+)
+
+
+BOOST_FUSION_ADAPT_STRUCT(
+  f2h::ast::TypeSpecIntrinsic,
+  (std::string, keyword)
+  (f2h::ast::PrimaryExpression, kind)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  f2h::ast::TypeSpecType,
+  (std::string, keyword)
+  (std::string, type_name)
 )
 
 #endif //F2H_AST_HPP
