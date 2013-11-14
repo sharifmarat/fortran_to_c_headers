@@ -47,13 +47,19 @@ private:
   {
     std::string name;
     std::string type;
+    bool pointer;
+    bool constant;
+    Argument() : type("void"), pointer(true), constant(false) { }
+    std::string ToCType() const { return std::string("") + (constant&&pointer?"const ":"") + type + (pointer?"*":""); }
+    std::string ToCTypeWithName() const { return ToCType() + " " + name; }
+    void SetArgumentType(const ast::TypeSpec& type_spec);
+    void SetArgumentAttribute(const std::string& attribute);
   };
 
   struct Function
   {
-    std::string return_value;
     std::string name;
-    std::string return_name;
+    Argument return_value;
     std::list<Argument> argument_list;
     std::list<Argument>::iterator find_argument(const std::string& name)
     {
@@ -63,6 +69,8 @@ private:
       }
       return argument_list.end();
     }
+    void SetArgumentType(const std::string& argument_name, const ast::TypeSpec& type_spec);
+    void SetArgumentAttribute(const std::string& argument_name, const std::string& attribute);
   };
 
 

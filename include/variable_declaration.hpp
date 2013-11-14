@@ -27,7 +27,7 @@ struct VariableDeclaration : qi::grammar<Iterator, ast::VariableDeclaration(), S
 
   qi::rule<Iterator, ast::VariableDeclaration(), Skipper<Iterator> > var_decl;
 
-  //qi::rule<Iterator, Skipper<Iterator> > attr_decl;
+  qi::rule<Iterator, Skipper<Iterator> > array_spec;
 
   qi::rule<Iterator, ast::Identifier(), Skipper<Iterator> > variable_name;
 

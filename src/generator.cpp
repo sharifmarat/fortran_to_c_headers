@@ -33,12 +33,12 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name)
   for (std::list<Function>::const_iterator it = functions_.begin(); it != functions_.end(); ++it)
   {
     const Function& function = *it;
-    body_ += function.return_value + " " + function.name + "(";
+    body_ += function.return_value.ToCType() + " " + function.name + "(";
     for (std::list<Argument>::const_iterator argument_it = function.argument_list.begin(); argument_it != function.argument_list.end(); ++argument_it)
     {
       if (argument_it != function.argument_list.begin()) body_ += ", ";
       const Argument& argument = *argument_it;
-      body_ += argument.type + " " + argument.name;
+      body_ += argument.ToCTypeWithName();
     }
     body_ += ");\n\n";
   }
@@ -74,8 +74,10 @@ bool Generator::operator()(ast::Function const& x)
   }
 
   // set return value
-  new_function.return_value = (x.type_spec_prefix) ? boost::apply_visitor(TypeSpecToCType(), *x.type_spec_prefix) : "void";
-  new_function.return_name = (x.result) ? (*x.result).name : x.function_name.name;
+  new_function.return_value.type = (x.type_spec_prefix) ? boost::apply_visitor(TypeSpecToCType(), *x.type_spec_prefix) : "void";
+  new_function.return_value.name = (x.result) ? (*x.result).name : x.function_name.name;
+  new_function.return_value.pointer = false;
+  new_function.return_value.constant = false;
 
   functions_.push_back(new_function);
   return true;
@@ -92,6 +94,12 @@ bool Generator::operator()(ast::VariableDeclaration const& x)
   
 bool Generator::operator()(ast::VariableDeclarationAttribute const& x)
 {
+  if (functions_.empty()) return true;
+  Function& current_function = functions_.back();
+  for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
+  {
+    current_function.SetArgumentAttribute((*it).name, x.keyword);
+  }
   return true;
 }
 
@@ -101,9 +109,7 @@ bool Generator::operator()(ast::VariableDeclarationSimple const& x)
   Function& current_function = functions_.back();
   for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
   {
-    std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
-    if (argument_it != current_function.argument_list.end()) (*argument_it).type = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
-    if (current_function.return_name == (*it).name) current_function.return_value = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
+    current_function.SetArgumentType((*it).name, x.type_spec);
   }
 
   return true;
@@ -115,14 +121,43 @@ bool Generator::operator()(ast::VariableDeclarationExtended const& x)
   Function& current_function = functions_.back();
   for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
   {
-    std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
-    if (argument_it != current_function.argument_list.end()) (*argument_it).type = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
-    if (current_function.return_name == (*it).name) current_function.return_value = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
+    current_function.SetArgumentType((*it).name, x.type_spec);
+
+    for (std::list<std::string>::const_iterator attribute_it = x.attributes.begin(); attribute_it != x.attributes.end(); ++attribute_it)
+    {
+      current_function.SetArgumentAttribute((*it).name, *attribute_it);
+    }
   }
 
-  //TODO attributes
-
   return true;
+}
+  
+void Generator::Function::SetArgumentType(const std::string& argument_name, const ast::TypeSpec& type_spec)
+{
+  std::list<Argument>::iterator argument_it = this->find_argument(argument_name);
+  if (argument_it != this->argument_list.end()) (*argument_it).SetArgumentType(type_spec);
+  if (this->return_value.name == argument_name) this->return_value.SetArgumentType(type_spec);
+}
+    
+void Generator::Function::SetArgumentAttribute(const std::string& argument_name, const std::string& attribute)
+{
+  std::list<Argument>::iterator argument_it = this->find_argument(argument_name);
+  if (argument_it != this->argument_list.end()) (*argument_it).SetArgumentAttribute(attribute);
+  if (this->return_value.name == argument_name) this->return_value.SetArgumentAttribute(attribute);
+}
+
+void Generator::Argument::SetArgumentType(const ast::TypeSpec& type_spec)
+{
+  this->type = boost::apply_visitor(TypeSpecToCType(), type_spec);
+}
+
+void Generator::Argument::SetArgumentAttribute(const std::string& attribute)
+{
+  if (attribute.find("value") == 0) this->pointer = false;
+  else if (attribute.find("intentin") == 0) this->constant = true;
+  else if (attribute.find("intentout") == 0) this->constant = false;
+  else if (attribute.find("dimension") == 0) this->pointer = true;
+  else std::cout << "!!! ignored attribute " << attribute << std::endl;
 }
 
 bool Generator::operator()(ast::Program const& x)

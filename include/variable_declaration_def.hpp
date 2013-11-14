@@ -24,7 +24,9 @@ VariableDeclaration<Iterator>::VariableDeclaration()
   qi::lexeme_type lexeme;
   qi::uint_type uint_;
 
-  variable_name = primary_expression.identifier;
+  array_spec = '(' > ((primary_expression | '*' | ':') % ',') > ')';
+
+  variable_name = primary_expression.identifier >> -(array_spec);
   variable_list = variable_name % ',';
 
   attribute =   string("allocatable")
@@ -33,7 +35,7 @@ VariableDeclaration<Iterator>::VariableDeclaration()
               | string("bind") //TODO (C [, NAME=ext-name])
               | string("codimension")
               | string("contiguous")
-              | string("dimension") //TODO, add (a-spec) Is an array specification. It can be any of the following: a(10,10), a(:), a(:,:), a(10,*)
+              | (string("dimension") >> -(array_spec))
               | string("external")
               | (string("intent") >> '(' >> (string("in") | string("out") | string("inout")) >> ')')
               | string("external")
