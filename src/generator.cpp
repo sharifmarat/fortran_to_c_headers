@@ -63,7 +63,6 @@ bool Generator::operator()(ast::Other const& x)
 bool Generator::operator()(ast::Function const& x)
 {
   Function new_function;
-  new_function.return_value = "void";
   new_function.name = x.function_name.name;
   for (std::list<ast::Identifier>::const_iterator it = x.argument_list.begin(); it != x.argument_list.end(); ++it)
   {
@@ -73,6 +72,11 @@ bool Generator::operator()(ast::Function const& x)
     new_function.argument_list.push_back(arg);
     std::cout << "pushing " << (*it).name << " into " << x.function_name.name << "\n";
   }
+
+  // set return value
+  new_function.return_value = "void";
+  if (x.type_spec_prefix) new_function.return_value = boost::apply_visitor(TypeSpecToCType(), *x.type_spec_prefix);
+  // TODO if result
 
   functions_.push_back(new_function);
   return true;
@@ -188,7 +192,19 @@ bool Generator::operator()(ast::Program const& x)
   }
   return true;
 }
-  
+
+std::string Generator::TypeSpecToCType::operator()(ast::TypeSpecIntrinsic const& type_spec) const
+{
+  std::string result = "unknown_intinsic_type";
+  if (type_spec.keyword == "integer") result = "int";
+  else if (type_spec.keyword == "real") result = "double";
+  return result;
+}
+
+std::string Generator::TypeSpecToCType::operator()(ast::TypeSpecType const& type_spec) const
+{
+  return "some_type";
+}
 
 void Generator::DumpHeaderStart(const std::string& define_name) const
 {

@@ -18,27 +18,26 @@ Function<Iterator>::Function()
   qi::lexeme_type lexeme;
   qi::char_type char_;
 
-  name = !other.keywords >> raw[lexeme[(alpha | '_') >> *(alnum | '_')]];
+  argument_list = -(primary_expression.identifier % ',');
 
-  identifier = name;
+  result_prefix = string("result");
 
-  argument_list = -(identifier % ',');
+  result = result_prefix > '(' > primary_expression.identifier > ')';
 
-  const_char_expr =   ('"' >> +(char_ - '"') >> '"')
-                    | ('\'' >> +(char_ - '\'') >> '\'')
-                    ;
-  
-  start = qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]
-        > identifier
-        > '(' > argument_list > ')'
-        > string("bind") > '(' > 'c' > -(',' > string("name") > '=' > const_char_expr) > ')'
-        > qi::eol
+  start =  -(type_spec)
+        >> qi::raw[qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]]
+        >  primary_expression.identifier
+        >  '(' > argument_list > ')'
+        >  -(result)
+        >  -(string("bind") > '(' > 'c' > -(',' > string("name") > '=' > primary_expression.const_char_expr) > ')')
+        >  qi::eol
         ;
 
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (start)
-  //    (identifier)
-  //    (const_char_expr)
+  //    (primary_expression.identifier)
+  //    (result)
+  //    (primary_expression.const_char_expr)
   //    (argument_list)
   //    );
 

@@ -35,6 +35,13 @@ private:
   void DumpHeaderEnd(const std::string& define_name) const;
   std::string GetDefineName() const;
 
+  struct TypeSpecToCType : boost::static_visitor<std::string>
+  {
+    std::string operator()(ast::Nil const&) const { BOOST_ASSERT(0); return ""; }
+    std::string operator()(ast::TypeSpecIntrinsic const& type_spec) const;
+    std::string operator()(ast::TypeSpecType const& type_spec) const;
+  };
+
   struct Argument
   {
     std::string name;

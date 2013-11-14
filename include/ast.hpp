@@ -4,6 +4,7 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/variant/recursive_variant.hpp>
+#include <boost/optional/optional.hpp>
 #include <list>
 
 
@@ -103,13 +104,13 @@ struct VariableDeclarationExtended
   std::list<Identifier> variables;
 };
 
-
 struct Function
 {
-  std::string prefix;
+  boost::optional<TypeSpec> type_spec_prefix;
   Identifier function_name;
   std::list<Identifier> argument_list;
-  std::string bind_name;
+  boost::optional<Identifier> result;
+  boost::optional<std::string> bind_name;
 };
 
 typedef std::list<ProgramBlock> Program;
@@ -148,14 +149,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
-  f2h::ast::Function,
-  (std::string, prefix)
-  (f2h::ast::Identifier, function_name)
-  (std::list<f2h::ast::Identifier>, argument_list)
-  (std::string, bind_name)
-)
-
-BOOST_FUSION_ADAPT_STRUCT(
   f2h::ast::FunctionCall,
   (f2h::ast::Identifier, function_name)
   (std::list<f2h::ast::PrimaryExpression>, args)
@@ -172,6 +165,15 @@ BOOST_FUSION_ADAPT_STRUCT(
   f2h::ast::TypeSpecType,
   (std::string, keyword)
   (std::string, type_name)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  f2h::ast::Function,
+  (boost::optional<f2h::ast::TypeSpec>, type_spec_prefix)
+  (f2h::ast::Identifier, function_name)
+  (std::list<f2h::ast::Identifier>, argument_list)
+  (boost::optional<f2h::ast::Identifier>, result)
+  (boost::optional<std::string>, bind_name)
 )
 
 #endif //F2H_AST_HPP

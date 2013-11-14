@@ -34,9 +34,9 @@ TypeSpec<Iterator>::TypeSpec()
   type_spec_type = (  string("type")
                     | string("class")
                    )
-                   > '('
-                   > primary_expression.name
-                   > ')'
+                   >> '('
+                   >  primary_expression.name
+                   >  ')'
                    ;
 
 

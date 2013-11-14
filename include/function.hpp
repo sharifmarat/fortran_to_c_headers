@@ -2,7 +2,8 @@
 #define F2H_FUNCTION_HPP
 
 #include "ast.hpp"
-#include "other.hpp"
+#include "type_spec.hpp"
+#include "primary_expression.hpp"
 #include "skipper.hpp"
 
 namespace f2h
@@ -17,17 +18,15 @@ struct Function : qi::grammar<Iterator, ast::Function(), Skipper<Iterator> >
 
   qi::rule<Iterator, ast::Function(), Skipper<Iterator> > start;
 
-  qi::rule<Iterator, std::string(), Skipper<Iterator> > name;
+  qi::rule<Iterator, Skipper<Iterator> > result_prefix;
 
-  qi::rule<Iterator, ast::Identifier(), Skipper<Iterator> > identifier;
+  qi::rule<Iterator, ast::Identifier(), Skipper<Iterator> > result;
 
   qi::rule<Iterator, std::list<ast::Identifier>(), Skipper<Iterator>  > argument_list;
 
-  qi::rule<Iterator, std::string(), Skipper<Iterator> > const_char_expr;
+  TypeSpec<Iterator> type_spec;
 
-  Other<Iterator> other;
-  
-  // TODO statements
+  PrimaryExpression<Iterator> primary_expression;
 };
 
 

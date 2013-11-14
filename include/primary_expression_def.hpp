@@ -44,6 +44,12 @@ PrimaryExpression<Iterator>::PrimaryExpression()
 
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (primary_expression)
+  //    (uint_)
+  //    (function_call)
+  //    (argument_list)
+  //    (identifier)
+  //    (bool_)
+  //    (const_char_expr)
   //    );
 
 }
