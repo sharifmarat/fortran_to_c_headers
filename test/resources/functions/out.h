@@ -6,7 +6,11 @@ extern "C"
 {
 #endif
 
-int SimpleFunction();
+int SimpleFunction1();
+
+double SimpleFunction2(double val);
+
+void* SimpleFunction3(double val);
 
 #ifdef __cplusplus
 }

@@ -74,9 +74,8 @@ bool Generator::operator()(ast::Function const& x)
   }
 
   // set return value
-  new_function.return_value = "void";
-  if (x.type_spec_prefix) new_function.return_value = boost::apply_visitor(TypeSpecToCType(), *x.type_spec_prefix);
-  // TODO if result
+  new_function.return_value = (x.type_spec_prefix) ? boost::apply_visitor(TypeSpecToCType(), *x.type_spec_prefix) : "void";
+  new_function.return_name = (x.result) ? (*x.result).name : x.function_name.name;
 
   functions_.push_back(new_function);
   return true;
@@ -90,94 +89,39 @@ bool Generator::operator()(ast::VariableDeclaration const& x)
   }
   return true;
 }
+  
+bool Generator::operator()(ast::VariableDeclarationAttribute const& x)
+{
+  return true;
+}
 
 bool Generator::operator()(ast::VariableDeclarationSimple const& x)
 {
-  std::cout << "ast::VariableDeclarationSimple " << x.keyword << " vars = \n";
+  if (functions_.empty()) return true;
+  Function& current_function = functions_.back();
   for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
   {
-    std::cout << (*it).name << "\n";
-
-    if (!functions_.empty())
-    {
-      Function& current_function = functions_.back();
-      std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
-      if (argument_it != current_function.argument_list.end())
-      {
-        if (x.keyword.find("integer") == 0)
-        {
-          (*argument_it).type = "int";
-        }
-        else if (x.keyword.find("real") == 0)
-        {
-          (*argument_it).type = "double";
-        }
-        else if (x.keyword.find("typec_ptr") == 0)
-        {
-          (*argument_it).type = "void*";
-        }
-        else
-        {
-          //TODO
-          std::cout << "!!! unable to map keyword = `" << x.keyword << "'\n";
-        }
-      }
-      else
-      {
-        std::cout << "!!! unable to find " << (*it).name << "\n";
-      }
-    }
+    std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
+    if (argument_it != current_function.argument_list.end()) (*argument_it).type = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
+    if (current_function.return_name == (*it).name) current_function.return_value = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
   }
-  std::cout << "\n";
-
-
 
   return true;
 }
 
 bool Generator::operator()(ast::VariableDeclarationExtended const& x)
 {
-  std::cout << "ast::VariableDeclarationExtended " << x.keyword << " attrs = ";
-  for (std::list<std::string>::const_iterator it = x.attributes.begin(); it != x.attributes.end(); ++it)
-  {
-    std::cout << *it << " ";
-  }
-  std::cout << " vars = \n";
+  if (functions_.empty()) return true;
+  Function& current_function = functions_.back();
   for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
   {
-    std::cout << (*it).name << "\n";
-
-    if (!functions_.empty())
-    {
-      Function& current_function = functions_.back();
-      std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
-      if (argument_it != current_function.argument_list.end())
-      {
-        if (x.keyword.find("integer") == 0)
-        {
-          (*argument_it).type = "int";
-        }
-        else if (x.keyword.find("real") == 0)
-        {
-          (*argument_it).type = "double";
-        }
-        else if (x.keyword.find("typec_ptr") == 0)
-        {
-          (*argument_it).type = "void*";
-        }
-        else
-        {
-          //TODO
-          std::cout << "!!! unable to map keyword = `" << x.keyword << "'\n";
-        }
-      }
-      else
-      {
-        std::cout << "!!! unable to find " << (*it).name << "\n";
-      }
-    }
+    std::list<Argument>::iterator argument_it = current_function.find_argument((*it).name);
+    if (argument_it != current_function.argument_list.end()) (*argument_it).type = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
+    if (current_function.return_name == (*it).name) current_function.return_value = boost::apply_visitor(TypeSpecToCType(), x.type_spec);
   }
-  std::cout << "\n";
+
+  //TODO attributes
+
   return true;
 }
 
@@ -203,7 +147,10 @@ std::string Generator::TypeSpecToCType::operator()(ast::TypeSpecIntrinsic const&
 
 std::string Generator::TypeSpecToCType::operator()(ast::TypeSpecType const& type_spec) const
 {
-  return "some_type";
+  std::string result = "unknown_derived_type";
+  if (type_spec.type_name == "c_ptr") result = "void*";
+  else result = type_spec.type_name;
+  return result;
 }
 
 void Generator::DumpHeaderStart(const std::string& define_name) const

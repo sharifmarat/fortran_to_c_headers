@@ -24,20 +24,8 @@ VariableDeclaration<Iterator>::VariableDeclaration()
   qi::lexeme_type lexeme;
   qi::uint_type uint_;
 
-  type_name = raw[lexeme[(alpha | '_') >> *(alnum | '_')]];
-
-  identifier = type_name;
-
-  variable_name = type_name;
+  variable_name = primary_expression.identifier;
   variable_list = variable_name % ',';
-
-  kind = ('*' >> uint_) | ('(' >> string("kind") >> '=' >> (uint_ | identifier[&ParameterToUInt]) >> ')');
-
-  type_spec =   (string("integer") >> -(kind))
-              | (string("real") >> -(kind))
-              | (string("type") >> '(' >> type_name >> ')')
-              | (string("class") >> '(' >> type_name >> ')')
-              ;
 
   attribute =   string("allocatable")
               | string("asynchronous")
@@ -65,19 +53,18 @@ VariableDeclaration<Iterator>::VariableDeclaration()
 
   attribute_list = attribute % ',';
 
-  attr_decl = attribute >> -(string("::")) > variable_list;
+  var_decl_attribute = attribute >> -(string("::")) > variable_list;
 
-  var_decl_simple = (attribute | type_spec) >> -(string("::")) > variable_list;
+  var_decl_simple = type_spec >> -(string("::")) > variable_list;
 
   var_decl_extended = type_spec >> ',' > attribute_list >> string("::") > variable_list;
 
-  var_decl = (var_decl_extended | var_decl_simple) > qi::eol;
+  var_decl = (var_decl_extended | var_decl_simple | var_decl_attribute) > qi::eol;
 
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (attribute)
   //    (variable_name)
   //    (type_spec)
-  //    (type_name)
   //    (attribute_list)
   //    (variable_list)
   //    (var_decl_simple)

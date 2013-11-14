@@ -24,6 +24,7 @@ struct Nil {};
 struct Other;
 struct Function;
 struct VariableDeclarationSimple;
+struct VariableDeclarationAttribute;
 struct VariableDeclarationExtended;
 struct FunctionCall;
 struct TypeSpecIntrinsic;
@@ -47,6 +48,7 @@ PrimaryExpression;
 
 typedef boost::variant<
       VariableDeclarationSimple
+    , VariableDeclarationAttribute
     , VariableDeclarationExtended
   >
 VariableDeclaration;
@@ -93,13 +95,19 @@ struct FunctionCall
 
 struct VariableDeclarationSimple
 {
+  TypeSpec type_spec;
+  std::list<Identifier> variables;
+};
+
+struct VariableDeclarationAttribute
+{
   std::string keyword;
   std::list<Identifier> variables;
 };
 
 struct VariableDeclarationExtended
 {
-  std::string keyword;
+  TypeSpec type_spec;
   std::list<std::string> attributes;
   std::list<Identifier> variables;
 };
@@ -137,13 +145,19 @@ BOOST_FUSION_ADAPT_STRUCT(
 
 BOOST_FUSION_ADAPT_STRUCT(
   f2h::ast::VariableDeclarationSimple,
+  (f2h::ast::TypeSpec, type_spec)
+  (std::list<f2h::ast::Identifier>, variables)
+)
+
+BOOST_FUSION_ADAPT_STRUCT(
+  f2h::ast::VariableDeclarationAttribute,
   (std::string, keyword)
   (std::list<f2h::ast::Identifier>, variables)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(
   f2h::ast::VariableDeclarationExtended,
-  (std::string, keyword)
+  (f2h::ast::TypeSpec, type_spec)
   (std::list<std::string>, attributes)
   (std::list<f2h::ast::Identifier>, variables)
 )

@@ -25,6 +25,7 @@ public:
   bool operator()(ast::Other const& x);
   bool operator()(ast::Function const& x);
   bool operator()(ast::VariableDeclaration const& x);
+  bool operator()(ast::VariableDeclarationAttribute const& x);
   bool operator()(ast::VariableDeclarationSimple const& x);
   bool operator()(ast::VariableDeclarationExtended const& x);
   bool operator()(ast::Program const& x);
@@ -52,6 +53,7 @@ private:
   {
     std::string return_value;
     std::string name;
+    std::string return_name;
     std::list<Argument> argument_list;
     std::list<Argument>::iterator find_argument(const std::string& name)
     {
