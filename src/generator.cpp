@@ -62,6 +62,9 @@ bool Generator::operator()(ast::Other const& x)
   
 bool Generator::operator()(ast::Function const& x)
 {
+  //ignore functions without bind
+  if (!x.bind_name) return true;
+
   Function new_function;
   new_function.name = x.function_name.name;
   for (std::list<ast::Identifier>::const_iterator it = x.argument_list.begin(); it != x.argument_list.end(); ++it)

@@ -27,7 +27,7 @@ Function<Iterator>::Function()
   start =  -(type_spec)
         >> qi::raw[qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]]
         >  primary_expression.identifier
-        >  '(' > argument_list > ')'
+        >  -('(' > argument_list > ')')
         >  -(result)
         >  -(string("bind") > '(' > 'c' > -(',' > string("name") > '=' > primary_expression.const_char_expr) > ')')
         >  qi::eol
