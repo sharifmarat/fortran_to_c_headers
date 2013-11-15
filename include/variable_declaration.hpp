@@ -37,6 +37,8 @@ struct VariableDeclaration : qi::grammar<Iterator, ast::VariableDeclaration(), S
 
   qi::rule<Iterator, std::list<ast::Identifier>(), Skipper<Iterator>  > variable_list;
 
+  qi::rule<Iterator, Skipper<Iterator> > initialize_spec;
+
   PrimaryExpression<Iterator> primary_expression;
 
   TypeSpec<Iterator> type_spec;

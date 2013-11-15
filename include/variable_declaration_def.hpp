@@ -26,7 +26,8 @@ VariableDeclaration<Iterator>::VariableDeclaration()
 
   array_spec = '(' > ((primary_expression | '*' | ':') % ',') > ')';
 
-  variable_name = primary_expression.identifier >> -(array_spec);
+  initialize_spec = '=' > +(char_ - qi::eol);
+  variable_name = primary_expression.identifier >> -(array_spec) >> -(initialize_spec);
   variable_list = variable_name % ',';
 
   attribute =   string("allocatable")
@@ -65,8 +66,9 @@ VariableDeclaration<Iterator>::VariableDeclaration()
 
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (attribute)
+  //    (initialize_spec)
+  //    (array_spec)
   //    (variable_name)
-  //    (type_spec)
   //    (attribute_list)
   //    (variable_list)
   //    (var_decl_simple)
