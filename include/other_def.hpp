@@ -15,14 +15,14 @@ Other<Iterator>::Other()
   qi::alnum_type alnum;
 
   keywords.add
-    ("function")
-    ("subroutine")
-    ("integer")
-    ("real")
-    ("complex")
-    ("logical")
-    ("character")
-    ("byte")
+    //("function")
+    //("subroutine")
+    //("integer")
+    //("real")
+    //("complex")
+    //("logical")
+    //("character")
+    //("byte")
     ;
 
   expr =

@@ -180,6 +180,7 @@ std::string Generator::TypeSpecToCType::operator()(ast::TypeSpecIntrinsic const&
   std::string result = "unknown_intinsic_type";
   if (type_spec.keyword == "integer") result = "int";
   else if (type_spec.keyword == "real") result = "double";
+  else if (type_spec.keyword == "character") result = "char";
   return result;
 }
 

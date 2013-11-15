@@ -78,7 +78,6 @@ struct Other
 struct TypeSpecIntrinsic
 {
   std::string keyword;
-  PrimaryExpression kind;
 };
 
 struct TypeSpecType
@@ -172,7 +171,6 @@ BOOST_FUSION_ADAPT_STRUCT(
 BOOST_FUSION_ADAPT_STRUCT(
   f2h::ast::TypeSpecIntrinsic,
   (std::string, keyword)
-  (f2h::ast::PrimaryExpression, kind)
 )
 
 BOOST_FUSION_ADAPT_STRUCT(

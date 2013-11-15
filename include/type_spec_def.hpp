@@ -18,17 +18,42 @@ TypeSpec<Iterator>::TypeSpec()
   qi::char_type char_;
   qi::uint_type uint_;
 
-  //type_spec_intrinsic
- 
-  kind_prefix = '(' >> -(string("kind") >> '=');
+  char_len_param = primary_expression | '*' | ':';
 
-  kind =   ('*' > uint_)
-         | (kind_prefix > primary_expression > ')');
+  // kind is a subset of char_or_kind_selector
+  char_or_kind_selector =   (    '('
+                              >> -(string("len") > '=')
+                              >> char_len_param
+                              >> -(',' >> string("kind") > '=' > primary_expression)
+                              >> ')'
+                            )
+                          | (    '('
+                              >> char_len_param
+                              >> ','
+                              >> -(string("kind") > '=')
+                               > primary_expression
+                               > ')'
+                            )
+                          | (    '('
+                              >> string("kind") > '=' > primary_expression
+                              >> -(',' > string("len") > '=' > char_len_param)
+                               > ')'
+                            )
+                          | (    '*'
+                              >> uint_
+                            )
+                          | (    '*'
+                              >> char_('(')
+                               > char_len_param
+                               > char_(')')
+                            )
+                          ;
 
   type_spec_intrinsic = (  string("integer")
                          | string("real")
+                         | string("character")
                         )
-                        >> -(kind)
+                        >> -(char_or_kind_selector)
                         ; 
 
   type_spec_type = (  string("type")
@@ -44,6 +69,10 @@ TypeSpec<Iterator>::TypeSpec()
   
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (type_spec)
+  //    (type_spec_type)
+  //    (type_spec_intrinsic)
+  //    (char_or_kind_selector)
+  //    (char_len_param)
   //    );
 
 }

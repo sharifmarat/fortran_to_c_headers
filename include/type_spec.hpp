@@ -18,13 +18,13 @@ struct TypeSpec : qi::grammar<Iterator, ast::TypeSpec(), Skipper<Iterator> >
 
   PrimaryExpression<Iterator> primary_expression;
 
-  qi::rule<Iterator, Skipper<Iterator> > kind_prefix;
-
-  qi::rule<Iterator, ast::PrimaryExpression(), Skipper<Iterator> > kind;
-
   qi::rule<Iterator, ast::TypeSpecIntrinsic(), Skipper<Iterator> > type_spec_intrinsic;
 
   qi::rule<Iterator, ast::TypeSpecType(), Skipper<Iterator> > type_spec_type;
+
+  qi::rule<Iterator, Skipper<Iterator> > char_len_param;
+
+  qi::rule<Iterator, Skipper<Iterator> > char_or_kind_selector;
 
   qi::rule<Iterator, ast::TypeSpec(), Skipper<Iterator> > type_spec;
 };
