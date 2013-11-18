@@ -60,7 +60,7 @@ TypeSpec<Iterator>::TypeSpec()
                     | string("class")
                    )
                    >> '('
-                   >  primary_expression.name
+                   >  (primary_expression.name | string("*"))
                    >  ')'
                    ;
 
