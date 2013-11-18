@@ -7,8 +7,8 @@ namespace f2h
 {
 
 template <typename Iterator>
-Grammar<Iterator>::Grammar()
-  : Grammar::base_type(program)
+Grammar<Iterator>::Grammar(ErrorHandler<Iterator>& error_handler)
+  : Grammar::base_type(program), function(error_handler), other(error_handler), var_decl(error_handler)
 {
   program_block = (modificator | function | var_decl | other);
 

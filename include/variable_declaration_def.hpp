@@ -13,8 +13,8 @@ unsigned int ParameterToUInt(ast::Identifier id)
 }
 
 template <typename Iterator>
-VariableDeclaration<Iterator>::VariableDeclaration()
-  : VariableDeclaration::base_type(var_decl)
+VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error_handler)
+  : VariableDeclaration::base_type(var_decl), primary_expression(error_handler), type_spec(error_handler)
 {
   qi::char_type char_;
   qi::alnum_type alnum;
@@ -23,6 +23,11 @@ VariableDeclaration<Iterator>::VariableDeclaration()
   qi::raw_type raw;
   qi::lexeme_type lexeme;
   qi::uint_type uint_;
+  qi::_1_type _1;
+  qi::_2_type _2;
+  qi::_3_type _3;
+  qi::_4_type _4;
+  typedef boost::phoenix::function<ErrorHandler<Iterator> > ErrorHandlerFunction;
 
   array_spec = '(' > ((primary_expression | '*' | ':') % ',') > ')';
 
@@ -63,6 +68,10 @@ VariableDeclaration<Iterator>::VariableDeclaration()
   var_decl_extended = type_spec >> ',' > attribute_list >> string("::") > variable_list;
 
   var_decl = (var_decl_extended | var_decl_simple | var_decl_attribute) > qi::eol;
+
+  qi::on_error<qi::fail>(var_decl,
+      ErrorHandlerFunction(error_handler)(
+        "Error! Expecting ", _4, _3));
 
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (attribute)

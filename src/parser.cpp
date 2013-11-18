@@ -3,6 +3,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include "error_handler.hpp"
 #include "exception.h"
 
 namespace f2h
@@ -33,7 +34,11 @@ void Parser::Parse()
   iterator_type iter = code.begin();
   iterator_type end = code.end();
 
-  bool parse_status = phrase_parse(iter, end, grammar_, skipper_, ast_);
+  Skipper<iterator_type> skipper;
+  ErrorHandler<iterator_type> error_handler(iter, end);
+  Grammar<iterator_type> grammar(error_handler);
+
+  bool parse_status = phrase_parse(iter, end, grammar, skipper, ast_);
   if (!parse_status || iter != end)
   {
     std::cerr << "parsing error" << std::endl;

@@ -8,7 +8,7 @@ namespace f2h
 {
 
 template <typename Iterator>
-Other<Iterator>::Other()
+Other<Iterator>::Other(ErrorHandler<Iterator> & error_handler)
   : Other::base_type(expr)
 {
   qi::char_type char_;

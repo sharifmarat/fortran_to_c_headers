@@ -2,6 +2,7 @@
 #define F2H_TYPE_SPEC_HPP
 
 #include "ast.hpp"
+#include "error_handler.hpp"
 #include "skipper.hpp"
 #include "primary_expression.hpp"
 
@@ -14,7 +15,7 @@ namespace qi = boost::spirit::qi;
 template <typename Iterator>
 struct TypeSpec : qi::grammar<Iterator, ast::TypeSpec(), Skipper<Iterator> >
 {   
-  TypeSpec();
+  TypeSpec(ErrorHandler<Iterator>& error_handler);
 
   PrimaryExpression<Iterator> primary_expression;
 

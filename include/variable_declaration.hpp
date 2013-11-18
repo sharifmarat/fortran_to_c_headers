@@ -4,6 +4,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <vector>
 
+#include "error_handler.hpp"
 #include "skipper.hpp"
 #include "primary_expression.hpp"
 #include "type_spec.hpp"
@@ -17,7 +18,7 @@ namespace qi = boost::spirit::qi;
 template <typename Iterator>
 struct VariableDeclaration : qi::grammar<Iterator, ast::VariableDeclaration(), Skipper<Iterator> >
 {   
-  VariableDeclaration();
+  VariableDeclaration(ErrorHandler<Iterator>& error_handler);
 
   qi::rule<Iterator, ast::VariableDeclarationSimple(), Skipper<Iterator> > var_decl_simple;
 

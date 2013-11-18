@@ -1,6 +1,7 @@
 #ifndef F2H_GRAMMAR_HPP
 #define F2H_GRAMMAR_HPP
 
+#include "error_handler.hpp"
 #include "other.hpp"
 #include "skipper.hpp"
 #include "variable_declaration.hpp"
@@ -16,7 +17,7 @@ namespace qi = boost::spirit::qi;
 template <typename Iterator>
 struct Grammar : qi::grammar<Iterator, ast::Program(), Skipper<Iterator> >
 {
-  Grammar();
+  Grammar(ErrorHandler<Iterator>& error_handler);
 
   Function<Iterator> function;
   Other<Iterator> other;

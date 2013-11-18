@@ -2,6 +2,7 @@
 #define F2H_FUNCTION_HPP
 
 #include "ast.hpp"
+#include "error_handler.hpp"
 #include "type_spec.hpp"
 #include "primary_expression.hpp"
 #include "skipper.hpp"
@@ -14,7 +15,7 @@ namespace qi = boost::spirit::qi;
 template <typename Iterator>
 struct Function : qi::grammar<Iterator, ast::Function(), Skipper<Iterator> >
 {   
-  Function();
+  Function(ErrorHandler<Iterator>& error_handler);
 
   qi::rule<Iterator, ast::Function(), Skipper<Iterator> > start;
 

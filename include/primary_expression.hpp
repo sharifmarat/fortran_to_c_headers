@@ -1,6 +1,7 @@
 #ifndef F2H_PRIMARY_EXPRESSION_HPP
 #define F2H_PRIMARY_EXPRESSION_HPP
 
+#include "error_handler.hpp"
 #include "ast.hpp"
 #include "skipper.hpp"
 
@@ -12,7 +13,7 @@ namespace qi = boost::spirit::qi;
 template <typename Iterator>
 struct PrimaryExpression : qi::grammar<Iterator, ast::PrimaryExpression(), Skipper<Iterator> >
 {   
-  PrimaryExpression();
+  PrimaryExpression(ErrorHandler<Iterator>& error_handler);
 
   qi::rule<Iterator, ast::PrimaryExpression(), Skipper<Iterator> > primary_expression;
 
