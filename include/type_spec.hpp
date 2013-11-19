@@ -6,6 +6,8 @@
 #include "skipper.hpp"
 #include "primary_expression.hpp"
 
+#include "balanced_parentheses.hpp"
+
 namespace f2h
 {
 
@@ -19,11 +21,11 @@ struct TypeSpec : qi::grammar<Iterator, ast::TypeSpec(), Skipper<Iterator> >
 
   PrimaryExpression<Iterator> primary_expression;
 
+  BalancedParentheses<Iterator> balanced_parentheses;
+
   qi::rule<Iterator, ast::TypeSpecIntrinsic(), Skipper<Iterator> > type_spec_intrinsic;
 
   qi::rule<Iterator, ast::TypeSpecType(), Skipper<Iterator> > type_spec_type;
-
-  qi::rule<Iterator, Skipper<Iterator> > char_len_param;
 
   qi::rule<Iterator, Skipper<Iterator> > char_or_kind_selector;
 

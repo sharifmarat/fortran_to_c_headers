@@ -8,7 +8,7 @@ namespace f2h
 
 template <typename Iterator>
 TypeSpec<Iterator>::TypeSpec(ErrorHandler<Iterator>& error_handler)
-  : TypeSpec::base_type(type_spec), primary_expression(error_handler)
+  : TypeSpec::base_type(type_spec), primary_expression(error_handler), balanced_parentheses(error_handler)
 {
   qi::alpha_type alpha;
   qi::alnum_type alnum;
@@ -23,34 +23,10 @@ TypeSpec<Iterator>::TypeSpec(ErrorHandler<Iterator>& error_handler)
   qi::_4_type _4;
   typedef boost::phoenix::function<ErrorHandler<Iterator> > ErrorHandlerFunction;
 
-  char_len_param = primary_expression | '*' | ':';
-
   // kind is a subset of char_or_kind_selector
-  char_or_kind_selector =   (    '('
-                              >> -(string("len") > '=')
-                              >> char_len_param
-                              >> -(',' >> string("kind") > '=' > primary_expression)
-                              >> ')'
-                            )
-                          | (    '('
-                              >> char_len_param
-                              >> ','
-                              >> -(string("kind") > '=')
-                               > primary_expression
-                               > ')'
-                            )
-                          | (    '('
-                              >> string("kind") > '=' > primary_expression
-                              >> -(',' > string("len") > '=' > char_len_param)
-                               > ')'
-                            )
+  char_or_kind_selector =   balanced_parentheses
                           | (    '*'
-                              >> uint_
-                            )
-                          | (    '*'
-                              >> char_('(')
-                               > char_len_param
-                               > char_(')')
+                              >> -(uint_ | balanced_parentheses)
                             )
                           ;
 
@@ -81,7 +57,6 @@ TypeSpec<Iterator>::TypeSpec(ErrorHandler<Iterator>& error_handler)
   //    (type_spec_type)
   //    (type_spec_intrinsic)
   //    (char_or_kind_selector)
-  //    (char_len_param)
   //    );
 
 }

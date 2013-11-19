@@ -21,13 +21,22 @@ Function<Iterator>::Function(ErrorHandler<Iterator>& error_handler)
   qi::_4_type _4;
   typedef boost::phoenix::function<ErrorHandler<Iterator> > ErrorHandlerFunction;
 
+
+  function_attributes.add
+    ("pure")
+    ("elemental")
+    ("recursive")
+    ;
+
   argument_list = -(primary_expression.identifier % ',');
 
   result_prefix = string("result");
 
   result = result_prefix > '(' > primary_expression.identifier > ')';
 
-  start =  -(type_spec)
+  start =  *function_attributes
+        >> -(type_spec)
+        >> *function_attributes
         >> qi::raw[qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]]
         >  primary_expression.identifier
         >  -('(' > argument_list > ')')

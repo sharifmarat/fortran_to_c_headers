@@ -4,11 +4,12 @@
 #include <boost/spirit/include/qi.hpp>
 #include <vector>
 
+#include "ast.hpp"
 #include "error_handler.hpp"
 #include "skipper.hpp"
 #include "primary_expression.hpp"
 #include "type_spec.hpp"
-#include "ast.hpp"
+#include "balanced_parentheses.hpp"
 
 namespace f2h
 {
@@ -28,8 +29,6 @@ struct VariableDeclaration : qi::grammar<Iterator, ast::VariableDeclaration(), S
 
   qi::rule<Iterator, ast::VariableDeclaration(), Skipper<Iterator> > var_decl;
 
-  qi::rule<Iterator, Skipper<Iterator> > array_spec;
-
   qi::rule<Iterator, ast::Identifier(), Skipper<Iterator> > variable_name;
 
   qi::rule<Iterator, std::string(), Skipper<Iterator> > attribute;
@@ -44,6 +43,7 @@ struct VariableDeclaration : qi::grammar<Iterator, ast::VariableDeclaration(), S
 
   TypeSpec<Iterator> type_spec;
 
+  BalancedParentheses<Iterator> balanced_parentheses;
 };
 
 

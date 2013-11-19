@@ -26,7 +26,6 @@ struct Function;
 struct VariableDeclarationSimple;
 struct VariableDeclarationAttribute;
 struct VariableDeclarationExtended;
-struct FunctionCall;
 struct TypeSpecIntrinsic;
 struct TypeSpecType;
 
@@ -41,7 +40,6 @@ typedef boost::variant<
     , unsigned int
     , bool
     , std::string
-    , boost::recursive_wrapper<FunctionCall>
     , Identifier
   >
 PrimaryExpression;
@@ -84,12 +82,6 @@ struct TypeSpecType
 {
   std::string keyword;
   std::string type_name;
-};
-
-struct FunctionCall
-{
-  Identifier function_name;
-  std::list<PrimaryExpression> args;
 };
 
 struct VariableDeclarationSimple
@@ -160,13 +152,6 @@ BOOST_FUSION_ADAPT_STRUCT(
   (std::list<std::string>, attributes)
   (std::list<f2h::ast::Identifier>, variables)
 )
-
-BOOST_FUSION_ADAPT_STRUCT(
-  f2h::ast::FunctionCall,
-  (f2h::ast::Identifier, function_name)
-  (std::list<f2h::ast::PrimaryExpression>, args)
-)
-
 
 BOOST_FUSION_ADAPT_STRUCT(
   f2h::ast::TypeSpecIntrinsic,

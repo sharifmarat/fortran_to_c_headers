@@ -14,7 +14,7 @@ unsigned int ParameterToUInt(ast::Identifier id)
 
 template <typename Iterator>
 VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error_handler)
-  : VariableDeclaration::base_type(var_decl), primary_expression(error_handler), type_spec(error_handler)
+  : VariableDeclaration::base_type(var_decl), primary_expression(error_handler), type_spec(error_handler), balanced_parentheses(error_handler)
 {
   qi::char_type char_;
   qi::alnum_type alnum;
@@ -29,10 +29,8 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
   qi::_4_type _4;
   typedef boost::phoenix::function<ErrorHandler<Iterator> > ErrorHandlerFunction;
 
-  array_spec = '(' > ((primary_expression | '*' | ':') % ',') > ')';
-
   initialize_spec = '=' > +(char_ - qi::eol);
-  variable_name = primary_expression.identifier >> -(array_spec) >> -(initialize_spec);
+  variable_name = primary_expression.identifier >> -(balanced_parentheses) >> -(initialize_spec);
   variable_list = variable_name % ',';
 
   attribute =   string("allocatable")
@@ -41,7 +39,7 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
               | string("bind") //TODO (C [, NAME=ext-name])
               | string("codimension")
               | string("contiguous")
-              | (string("dimension") >> -(array_spec))
+              | (string("dimension") >> -(balanced_parentheses))
               | string("external")
               | (string("intent") >> '(' >> (string("in") | string("out") | string("inout")) >> ')')
               | string("external")
@@ -76,7 +74,6 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (attribute)
   //    (initialize_spec)
-  //    (array_spec)
   //    (variable_name)
   //    (attribute_list)
   //    (variable_list)

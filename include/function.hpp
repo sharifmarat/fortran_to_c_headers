@@ -28,6 +28,8 @@ struct Function : qi::grammar<Iterator, ast::Function(), Skipper<Iterator> >
   TypeSpec<Iterator> type_spec;
 
   PrimaryExpression<Iterator> primary_expression;
+
+  qi::symbols<char> function_attributes;
 };
 
 

@@ -34,15 +34,8 @@ PrimaryExpression<Iterator>::PrimaryExpression(ErrorHandler<Iterator> & error_ha
                     | ('\'' >> +(char_ - '\'') >> '\'')
                     ;
 
-  function_call =   (identifier >> '(')
-                  > argument_list
-                  > ')'
-                  ;
   primary_expression =  uint_
-                      | function_call
                       | identifier
-                      | bool_   //TODO change to .true. or .false.
-                      // TODO identifier(array_spec)
                       | const_char_expr
                       ;
 
@@ -53,7 +46,6 @@ PrimaryExpression<Iterator>::PrimaryExpression(ErrorHandler<Iterator> & error_ha
   //BOOST_SPIRIT_DEBUG_NODES(
   //    (primary_expression)
   //    (uint_)
-  //    (function_call)
   //    (argument_list)
   //    (identifier)
   //    (bool_)

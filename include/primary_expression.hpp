@@ -24,8 +24,6 @@ struct PrimaryExpression : qi::grammar<Iterator, ast::PrimaryExpression(), Skipp
   qi::rule<Iterator, std::string(), Skipper<Iterator> > const_char_expr;
 
   qi::rule<Iterator, std::list<ast::PrimaryExpression>(), Skipper<Iterator> > argument_list;
-
-  qi::rule<Iterator, ast::FunctionCall(), Skipper<Iterator> > function_call;
 };
 
 
