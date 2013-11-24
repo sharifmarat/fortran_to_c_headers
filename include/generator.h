@@ -50,6 +50,7 @@ private:
     bool pointer;
     bool constant;
     bool has_c_bind;
+
     Argument() : type("void"), pointer(true), constant(false), has_c_bind(false) { }
     Argument(const std::string& name) : type("void"), pointer(true), constant(false), name(name), has_c_bind(false) { }
     std::string ToCType() const { return std::string("") + (constant&&pointer?"const ":"") + type + (pointer?"*":""); }
@@ -64,6 +65,10 @@ private:
     std::string name;
     Argument return_value;
     std::list<Argument> argument_list;
+    bool has_c_bind;
+
+    Function() : has_c_bind(false) { }
+
     std::list<Argument>::iterator find_argument(const std::string& name)
     {
       for (std::list<Argument>::iterator it = argument_list.begin(); it != argument_list.end(); ++it)

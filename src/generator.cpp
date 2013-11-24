@@ -40,6 +40,7 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name)
   for (std::list<Function>::const_iterator it = functions_.begin(); it != functions_.end(); ++it)
   {
     const Function& function = *it;
+    if (!function.has_c_bind) continue;
     out_ << function.return_value.ToCType() << " " << function.name << "(";
     for (std::list<Argument>::const_iterator argument_it = function.argument_list.begin(); argument_it != function.argument_list.end(); ++argument_it)
     {
@@ -67,11 +68,9 @@ bool Generator::operator()(ast::Other const& x)
   
 bool Generator::operator()(ast::Function const& x)
 {
-  //ignore functions without bind
-  if (!x.bind_name) return true;
-
   Function new_function;
   new_function.name = x.function_name.name;
+  new_function.has_c_bind = x.bind_name;
   for (std::list<ast::Identifier>::const_iterator it = x.argument_list.begin(); it != x.argument_list.end(); ++it)
   {
     Argument arg;
