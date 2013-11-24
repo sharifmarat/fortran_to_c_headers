@@ -30,21 +30,26 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name)
 
   DumpHeaderStart(define_name);
 
+  // output global variables
+  for (std::list<Argument>::const_iterator it = globals_.begin(); it != globals_.end(); ++it)
+  {
+    if ((*it).has_c_bind) out_ << (*it).ToCTypeWithName() << ";\n\n";
+  }
+
+  // output functions
   for (std::list<Function>::const_iterator it = functions_.begin(); it != functions_.end(); ++it)
   {
     const Function& function = *it;
-    body_ += function.return_value.ToCType() + " " + function.name + "(";
+    out_ << function.return_value.ToCType() << " " << function.name << "(";
     for (std::list<Argument>::const_iterator argument_it = function.argument_list.begin(); argument_it != function.argument_list.end(); ++argument_it)
     {
-      if (argument_it != function.argument_list.begin()) body_ += ", ";
+      if (argument_it != function.argument_list.begin()) out_ << ", ";
       const Argument& argument = *argument_it;
-      body_ += argument.ToCTypeWithName();
+      out_ << argument.ToCTypeWithName();
     }
-    body_ += ");\n\n";
+    out_ << ");\n\n";
   }
 
-  out_ << body_;
-  
   DumpHeaderEnd(define_name);
 
   out_.close();
@@ -108,11 +113,19 @@ bool Generator::operator()(ast::VariableDeclarationAttribute const& x)
 
 bool Generator::operator()(ast::VariableDeclarationSimple const& x)
 {
-  if (functions_.empty()) return true;
-  Function& current_function = functions_.back();
   for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
   {
-    current_function.SetArgumentType((*it).name, x.type_spec);
+    if (!functions_.empty())
+    {
+      // set argument type for function argument
+      functions_.back().SetArgumentType((*it).name, x.type_spec);
+    }
+    else
+    {
+      // no functions yet, add global variable
+      Argument& arg = this->GetOrAddGlobalArgument((*it).name);
+      arg.SetArgumentType(x.type_spec);
+    }
   }
 
   return true;
@@ -120,21 +133,44 @@ bool Generator::operator()(ast::VariableDeclarationSimple const& x)
 
 bool Generator::operator()(ast::VariableDeclarationExtended const& x)
 {
-  if (functions_.empty()) return true;
-  Function& current_function = functions_.back();
   for (std::list<ast::Identifier>::const_iterator it = x.variables.begin(); it != x.variables.end(); ++it)
   {
-    current_function.SetArgumentType((*it).name, x.type_spec);
-
-    for (std::list<std::string>::const_iterator attribute_it = x.attributes.begin(); attribute_it != x.attributes.end(); ++attribute_it)
+    if (!functions_.empty())
     {
-      current_function.SetArgumentAttribute((*it).name, *attribute_it);
+      // set argument type and attributes on function argument
+      Function& current_function = functions_.back();
+      current_function.SetArgumentType((*it).name, x.type_spec);
+      for (std::list<std::string>::const_iterator attribute_it = x.attributes.begin(); attribute_it != x.attributes.end(); ++attribute_it)
+      {
+        current_function.SetArgumentAttribute((*it).name, *attribute_it);
+      }
+    }
+    else
+    {
+      // no functions yet, add global variable
+      Argument& arg = this->GetOrAddGlobalArgument((*it).name);
+      arg.SetArgumentType(x.type_spec);
+      for (std::list<std::string>::const_iterator attribute_it = x.attributes.begin(); attribute_it != x.attributes.end(); ++attribute_it)
+      {
+        arg.SetArgumentAttribute(*attribute_it);
+      }
     }
   }
 
   return true;
 }
-  
+
+Generator::Argument& Generator::GetOrAddGlobalArgument(const std::string& name)
+{
+  std::list<Argument>::iterator it = std::find(globals_.begin(), globals_.end(), name);
+  if (it == globals_.end())
+  {
+    it = globals_.insert(it, Argument(name));
+    (*it).pointer = false; // global vars are not pointers by default
+  }
+  return *it;
+}
+
 void Generator::Function::SetArgumentType(const std::string& argument_name, const ast::TypeSpec& type_spec)
 {
   std::list<Argument>::iterator argument_it = this->find_argument(argument_name);
@@ -160,6 +196,7 @@ void Generator::Argument::SetArgumentAttribute(const std::string& attribute)
   else if (attribute.find("intentin") == 0) this->constant = true;
   else if (attribute.find("intentout") == 0) this->constant = false;
   else if (attribute.find("dimension") == 0) this->pointer = true;
+  else if (attribute.find("bind") == 0) this->has_c_bind = true;
   else std::cout << "!!! ignored attribute " << attribute << std::endl;
 }
 

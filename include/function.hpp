@@ -6,6 +6,7 @@
 #include "type_spec.hpp"
 #include "primary_expression.hpp"
 #include "skipper.hpp"
+#include "bind_attribute.hpp"
 
 namespace f2h
 {
@@ -28,6 +29,8 @@ struct Function : qi::grammar<Iterator, ast::Function(), Skipper<Iterator> >
   TypeSpec<Iterator> type_spec;
 
   PrimaryExpression<Iterator> primary_expression;
+
+  BindAttribute<Iterator> bind_attribute;
 
   qi::symbols<char> function_attributes;
 };

@@ -14,8 +14,10 @@ unsigned int ParameterToUInt(ast::Identifier id)
 
 template <typename Iterator>
 VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error_handler)
-  : VariableDeclaration::base_type(var_decl), primary_expression(error_handler), type_spec(error_handler), balanced_parentheses(error_handler)
+  : VariableDeclaration::base_type(var_decl), primary_expression(error_handler), type_spec(error_handler),
+    balanced_parentheses(error_handler), bind_attribute(error_handler)
 {
+  using qi::lit;
   qi::char_type char_;
   qi::alnum_type alnum;
   qi::alpha_type alpha;
@@ -36,7 +38,7 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
   attribute =   string("allocatable")
               | string("asynchronous")
               | string("automatic")
-              | string("bind") //TODO (C [, NAME=ext-name])
+              | bind_attribute
               | string("codimension")
               | string("contiguous")
               | (string("dimension") >> -(balanced_parentheses))

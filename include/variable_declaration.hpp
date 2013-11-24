@@ -10,6 +10,7 @@
 #include "primary_expression.hpp"
 #include "type_spec.hpp"
 #include "balanced_parentheses.hpp"
+#include "bind_attribute.hpp"
 
 namespace f2h
 {
@@ -44,6 +45,8 @@ struct VariableDeclaration : qi::grammar<Iterator, ast::VariableDeclaration(), S
   TypeSpec<Iterator> type_spec;
 
   BalancedParentheses<Iterator> balanced_parentheses;
+
+  BindAttribute<Iterator> bind_attribute;
 };
 
 

@@ -7,8 +7,9 @@ namespace f2h
 
 template <typename Iterator>
 Function<Iterator>::Function(ErrorHandler<Iterator>& error_handler)
-  : Function::base_type(start), type_spec(error_handler), primary_expression(error_handler)
+  : Function::base_type(start), type_spec(error_handler), primary_expression(error_handler), bind_attribute(error_handler)
 {
+  using qi::lit;
   qi::alpha_type alpha;
   qi::alnum_type alnum;
   qi::string_type string;
@@ -20,7 +21,6 @@ Function<Iterator>::Function(ErrorHandler<Iterator>& error_handler)
   qi::_3_type _3;
   qi::_4_type _4;
   typedef boost::phoenix::function<ErrorHandler<Iterator> > ErrorHandlerFunction;
-
 
   function_attributes.add
     ("pure")
@@ -41,7 +41,7 @@ Function<Iterator>::Function(ErrorHandler<Iterator>& error_handler)
         >  primary_expression.identifier
         >  -('(' > argument_list > ')')
         >  -(result)
-        >  -(string("bind") > '(' > 'c' > -(',' > string("name") > '=' > primary_expression.const_char_expr) > ')')
+        > -(bind_attribute)
         >  qi::eol
         ;
 

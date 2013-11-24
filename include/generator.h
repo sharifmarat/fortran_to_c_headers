@@ -49,11 +49,14 @@ private:
     std::string type;
     bool pointer;
     bool constant;
-    Argument() : type("void"), pointer(true), constant(false) { }
+    bool has_c_bind;
+    Argument() : type("void"), pointer(true), constant(false), has_c_bind(false) { }
+    Argument(const std::string& name) : type("void"), pointer(true), constant(false), name(name), has_c_bind(false) { }
     std::string ToCType() const { return std::string("") + (constant&&pointer?"const ":"") + type + (pointer?"*":""); }
     std::string ToCTypeWithName() const { return ToCType() + " " + name; }
     void SetArgumentType(const ast::TypeSpec& type_spec);
     void SetArgumentAttribute(const std::string& attribute);
+    bool operator==(const std::string& name) { return this->name == name; }
   };
 
   struct Function
@@ -73,15 +76,16 @@ private:
     void SetArgumentAttribute(const std::string& argument_name, const std::string& attribute);
   };
 
+  Argument& GetOrAddGlobalArgument(const std::string& name);
 
 private:
   Generator();
 
 private:
   std::string out_file_name_;
-  std::string body_;
   mutable std::ofstream out_;
   std::list<Function> functions_;
+  std::list<Argument> globals_;
 };
 
 
