@@ -29,7 +29,7 @@ struct BindAttribute : qi::grammar<Iterator, std::string(), Skipper<Iterator> >
                      > 'c' 
                      > -(  ',' 
                           > lit("name") 
-                          > char_('=') 
+                          > char_('=')
                           > primary_expression.const_char_expr
                         ) 
                      > ')';

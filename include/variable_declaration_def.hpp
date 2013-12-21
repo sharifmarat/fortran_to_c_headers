@@ -61,11 +61,11 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
 
   attribute_list = attribute % ',';
 
-  var_decl_attribute = attribute >> -(string("::")) > variable_list;
+  var_decl_attribute = attribute >> -lit("::") > variable_list;
 
-  var_decl_simple = type_spec >> -(string("::")) > variable_list;
+  var_decl_simple = type_spec >> -lit("::") > variable_list;
 
-  var_decl_extended = type_spec >> ',' > attribute_list >> string("::") > variable_list;
+  var_decl_extended = type_spec >> ',' > attribute_list >> lit("::") > variable_list;
 
   var_decl = (var_decl_extended | var_decl_simple | var_decl_attribute) > qi::eol;
 

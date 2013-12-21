@@ -41,7 +41,7 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name)
   {
     const Function& function = *it;
     if (!function.has_c_bind) continue;
-    out_ << function.return_value.ToCType() << " " << function.name << "(";
+    out_ << function.return_value.ToCType() << " " << function.GetName() << "(";
     for (std::list<Argument>::const_iterator argument_it = function.argument_list.begin(); argument_it != function.argument_list.end(); ++argument_it)
     {
       if (argument_it != function.argument_list.begin()) out_ << ", ";
@@ -71,6 +71,7 @@ bool Generator::operator()(ast::Function const& x)
   Function new_function;
   new_function.name = x.function_name.name;
   new_function.has_c_bind = x.bind_name;
+  new_function.bind_name = x.bind_name ? ExtractBindName(*x.bind_name) : "";
   for (std::list<ast::Identifier>::const_iterator it = x.argument_list.begin(); it != x.argument_list.end(); ++it)
   {
     Argument arg;
@@ -190,11 +191,27 @@ void Generator::Argument::SetArgumentType(const ast::TypeSpec& type_spec)
 
 void Generator::Argument::SetArgumentAttribute(const std::string& attribute)
 {
-  if (attribute.find("value") == 0) this->pointer = false;
-  else if (attribute.find("intentin") == 0) this->constant = true;
-  else if (attribute.find("intentout") == 0) this->constant = false;
-  else if (attribute.find("dimension") == 0) this->pointer = true;
-  else if (attribute.find("bind") == 0) this->has_c_bind = true;
+  if (attribute.find("value") == 0) 
+  {
+    this->pointer = false;
+  }
+  else if (attribute.find("intentin") == 0)
+  {
+    this->constant = true;
+  }
+  else if (attribute.find("intentout") == 0)
+  {
+    this->constant = false;
+  }
+  else if (attribute.find("dimension") == 0)
+  {
+    this->pointer = true;
+  }
+  else if (attribute.find("bind") == 0) 
+  {
+    this->has_c_bind = true;
+    this->bind_name = ExtractBindName(attribute);
+  }
 }
 
 bool Generator::operator()(ast::Program const& x)

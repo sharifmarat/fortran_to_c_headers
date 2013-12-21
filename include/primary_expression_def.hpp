@@ -30,8 +30,8 @@ PrimaryExpression<Iterator>::PrimaryExpression(ErrorHandler<Iterator> & error_ha
 
   argument_list = -(primary_expression % ',');
 
-  const_char_expr =   ('"' >> +(char_ - '"') >> '"')
-                    | ('\'' >> +(char_ - '\'') >> '\'')
+  const_char_expr =   ('"' >> +(char_ - '"' - qi::eol) >> '"')
+                    | ('\'' >> +(char_ - '\'' - qi::eol) >> '\'')
                     ;
 
   primary_expression =  uint_

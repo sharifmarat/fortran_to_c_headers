@@ -32,6 +32,12 @@ public:
 
 private:
 
+  static std::string ExtractBindName(const std::string& bind_attribute)
+  {
+    const std::string bind_prefix = "bind=";
+    return bind_attribute.length() > bind_prefix.length() ? bind_attribute.substr(bind_prefix.length()) : "";
+  }
+
   void DumpHeaderStart(const std::string& define_name) const;
   void DumpHeaderEnd(const std::string& define_name) const;
   std::string GetDefineName() const;
@@ -46,6 +52,7 @@ private:
   struct Argument
   {
     std::string name;
+    std::string bind_name;
     std::string type;
     bool pointer;
     bool constant;
@@ -54,7 +61,7 @@ private:
     Argument() : type("void"), pointer(true), constant(false), has_c_bind(false) { }
     Argument(const std::string& name) : type("void"), pointer(true), constant(false), name(name), has_c_bind(false) { }
     std::string ToCType() const { return std::string("") + (constant&&pointer?"const ":"") + type + (pointer?"*":""); }
-    std::string ToCTypeWithName() const { return ToCType() + " " + name; }
+    std::string ToCTypeWithName() const { return ToCType() + " " + (has_c_bind&&bind_name.length()>0 ? bind_name : name); }
     void SetArgumentType(const ast::TypeSpec& type_spec);
     void SetArgumentAttribute(const std::string& attribute);
     bool operator==(const std::string& name) { return this->name == name; }
@@ -63,11 +70,14 @@ private:
   struct Function
   {
     std::string name;
+    std::string bind_name;
     Argument return_value;
     std::list<Argument> argument_list;
     bool has_c_bind;
 
     Function() : has_c_bind(false) { }
+
+    const std::string& GetName() const { return bind_name.length() > 0 ? bind_name : name; }
 
     std::list<Argument>::iterator find_argument(const std::string& name)
     {
