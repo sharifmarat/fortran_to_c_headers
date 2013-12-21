@@ -22,7 +22,9 @@ endif()
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
 # add spirit debug
-add_definitions(-DBOOST_SPIRIT_DEBUG)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-DBOOST_SPIRIT_DEBUG -DBOOST_SPIRIT_DEBUG_PRINT_SOME=150)
+endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")

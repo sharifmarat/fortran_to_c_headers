@@ -77,7 +77,6 @@ bool Generator::operator()(ast::Function const& x)
     arg.type = "void";
     arg.name = (*it).name;
     new_function.argument_list.push_back(arg);
-    std::cout << "pushing " << (*it).name << " into " << x.function_name.name << "\n";
   }
 
   // set return value
@@ -196,7 +195,6 @@ void Generator::Argument::SetArgumentAttribute(const std::string& attribute)
   else if (attribute.find("intentout") == 0) this->constant = false;
   else if (attribute.find("dimension") == 0) this->pointer = true;
   else if (attribute.find("bind") == 0) this->has_c_bind = true;
-  else std::cout << "!!! ignored attribute " << attribute << std::endl;
 }
 
 bool Generator::operator()(ast::Program const& x)

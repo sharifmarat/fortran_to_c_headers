@@ -7,6 +7,10 @@ module ExpressionsMod
 
 contains
 
+  pure integer function GetDefaultLength()
+    GetDefaultLength = 12
+  end function
+
   pure integer function GetLength(a, b, str)
     integer, intent(in) :: a
     integer, intent(in) :: b
@@ -38,6 +42,10 @@ contains
     character(kind=c_char, len=1), dimension(GetLength(1, 2+3, "blah") - GetOffset(3.0E+3_KR, -3.86D-67) + 3 - 1 + PARAM)  :: str
     intent(in) :: str
     character(len=GetLength(1, 2+3, "blah") - GetOffset(3.0E+3_KR, -3.86D-67) + 3 - 1 + PARAM) :: tmp_str
+    character(len=GetDefaultLength())   :: tmp_str2
+    character(len=GetDefaultLength()), dimension(GetLength(GetDefaultLength(), GetDefaultLength(), "normal string"))   :: tmp_str3
+    character(len=GetLength(GetDefaultLength(), GetLength(GetDefaultLength(), GetLength(5, GetDefaultLength( &
+              ), "end"), "blah"), "str"))   :: tmp_str4
   end subroutine Expressions
 
 end module ExpressionsMod
