@@ -8,9 +8,9 @@ set(EXECUTABLE ${PROJECT_NAME})
 project(${PROJECT_NAME} CXX)
 
 # find boost
-set(Boost_USE_STATIC_LIBS OFF) 
-set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME OFF) 
+set(Boost_USE_STATIC_LIBS ON) 
+set(Boost_USE_MULTITHREADED OFF)  
+set(Boost_USE_STATIC_RUNTIME ON) 
 find_package(Boost 1.48.0 COMPONENTS program_options system filesystem)
 if (Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIR})
@@ -23,6 +23,10 @@ include_directories("${CMAKE_SOURCE_DIR}/include")
 
 # add spirit debug
 add_definitions(-DBOOST_SPIRIT_DEBUG)
+
+if (CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+endif()
 
 # build library
 file(GLOB_RECURSE LIBRARY_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
