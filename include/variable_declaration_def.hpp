@@ -1,4 +1,5 @@
 #include "variable_declaration.hpp"
+#include <boost/spirit/include/qi_no_case.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 #include <boost/spirit/include/qi_no_case.hpp>
 
@@ -17,6 +18,7 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
   : VariableDeclaration::base_type(var_decl), primary_expression(error_handler), type_spec(error_handler),
     balanced_parentheses(error_handler), bind_attribute(error_handler)
 {
+  using boost::spirit::ascii::no_case;
   using qi::lit;
   qi::char_type char_;
   qi::alnum_type alnum;
@@ -35,28 +37,28 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
   variable_name = primary_expression.identifier >> -(balanced_parentheses) >> -(initialize_spec);
   variable_list = variable_name % ',';
 
-  attribute =   string("allocatable")
-              | string("asynchronous")
-              | string("automatic")
+  attribute =   no_case[string("allocatable")]
+              | no_case[string("asynchronous")]
+              | no_case[string("automatic")]
               | bind_attribute
-              | string("codimension")
-              | string("contiguous")
-              | (string("dimension") >> -(balanced_parentheses))
-              | string("external")
-              | (string("intent") >> '(' >> (string("in") | string("out") | string("inout")) >> ')')
-              | string("external")
-              | string("intrinsic")
-              | string("optional")
-              | string("parameter")
-              | string("pointer")
-              | string("private")
-              | string("protected")
-              | string("public")
-              | string("save")
-              | string("static")
-              | string("target")
-              | string("value")
-              | string("volatile")
+              | no_case[string("codimension")]
+              | no_case[string("contiguous")]
+              | (no_case[string("dimension")] >> -(balanced_parentheses))
+              | no_case[string("external")]
+              | (no_case[string("intent")] >> '(' >> (no_case[string("in")] | no_case[string("out")] | no_case[string("inout")]) >> ')')
+              | no_case[string("external")]
+              | no_case[string("intrinsic")]
+              | no_case[string("optional")]
+              | no_case[string("parameter")]
+              | no_case[string("pointer")]
+              | no_case[string("private")]
+              | no_case[string("protected")]
+              | no_case[string("public")]
+              | no_case[string("save")]
+              | no_case[string("static")]
+              | no_case[string("target")]
+              | no_case[string("value")]
+              | no_case[string("volatile")]
               ;
 
   attribute_list = attribute % ',';

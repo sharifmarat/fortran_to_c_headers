@@ -6,6 +6,8 @@
 #include <list>
 #include <iostream>
 #include <fstream>
+#include <boost/algorithm/string/find.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 #include "ast.hpp"
 
@@ -64,7 +66,7 @@ private:
     std::string ToCTypeWithName() const { return ToCType() + " " + (has_c_bind&&bind_name.length()>0 ? bind_name : name); }
     void SetArgumentType(const ast::TypeSpec& type_spec);
     void SetArgumentAttribute(const std::string& attribute);
-    bool operator==(const std::string& name) { return this->name == name; }
+    bool operator==(const std::string& name) { return boost::iequals(this->name, name); }
   };
 
   struct Function
@@ -83,7 +85,7 @@ private:
     {
       for (std::list<Argument>::iterator it = argument_list.begin(); it != argument_list.end(); ++it)
       {
-        if ((*it).name == name) return it;
+        if (boost::iequals((*it).name, name)) return it;
       }
       return argument_list.end();
     }

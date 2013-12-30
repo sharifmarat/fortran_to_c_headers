@@ -174,14 +174,14 @@ void Generator::Function::SetArgumentType(const std::string& argument_name, cons
 {
   std::list<Argument>::iterator argument_it = this->find_argument(argument_name);
   if (argument_it != this->argument_list.end()) (*argument_it).SetArgumentType(type_spec);
-  if (this->return_value.name == argument_name) this->return_value.SetArgumentType(type_spec);
+  if (boost::iequals(this->return_value.name, argument_name)) this->return_value.SetArgumentType(type_spec);
 }
     
 void Generator::Function::SetArgumentAttribute(const std::string& argument_name, const std::string& attribute)
 {
   std::list<Argument>::iterator argument_it = this->find_argument(argument_name);
   if (argument_it != this->argument_list.end()) (*argument_it).SetArgumentAttribute(attribute);
-  if (this->return_value.name == argument_name) this->return_value.SetArgumentAttribute(attribute);
+  if (boost::iequals(this->return_value.name, argument_name)) this->return_value.SetArgumentAttribute(attribute);
 }
 
 void Generator::Argument::SetArgumentType(const ast::TypeSpec& type_spec)
@@ -191,23 +191,23 @@ void Generator::Argument::SetArgumentType(const ast::TypeSpec& type_spec)
 
 void Generator::Argument::SetArgumentAttribute(const std::string& attribute)
 {
-  if (attribute.find("value") == 0) 
+  if (boost::iequals(attribute, "value")) 
   {
     this->pointer = false;
   }
-  else if (attribute.find("intentin") == 0)
+  else if (boost::iequals(attribute, "intentin"))
   {
     this->constant = true;
   }
-  else if (attribute.find("intentout") == 0)
+  else if (boost::iequals(attribute, "intentout"))
   {
     this->constant = false;
   }
-  else if (attribute.find("dimension") == 0)
+  else if (boost::iequals(attribute, "dimension"))
   {
     this->pointer = true;
   }
-  else if (attribute.find("bind") == 0) 
+  else if (boost::algorithm::ifind_first(attribute, "bind").begin() == attribute.begin())
   {
     this->has_c_bind = true;
     this->bind_name = ExtractBindName(attribute);
@@ -229,16 +229,16 @@ bool Generator::operator()(ast::Program const& x)
 std::string Generator::TypeSpecToCType::operator()(ast::TypeSpecIntrinsic const& type_spec) const
 {
   std::string result = "unknown_intinsic_type";
-  if (type_spec.keyword == "integer") result = "int";
-  else if (type_spec.keyword == "real") result = "double";
-  else if (type_spec.keyword == "character") result = "char";
+  if (boost::iequals(type_spec.keyword, "integer")) result = "int";
+  else if (boost::iequals(type_spec.keyword, "real")) result = "double";
+  else if (boost::iequals(type_spec.keyword, "character")) result = "char";
   return result;
 }
 
 std::string Generator::TypeSpecToCType::operator()(ast::TypeSpecType const& type_spec) const
 {
   std::string result = "unknown_derived_type";
-  if (type_spec.type_name == "c_ptr") result = "void*";
+  if (boost::iequals(type_spec.type_name, "c_ptr")) result = "void*";
   else result = type_spec.type_name;
   return result;
 }

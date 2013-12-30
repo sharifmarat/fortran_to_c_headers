@@ -1,4 +1,5 @@
 #include "type_spec.hpp"
+#include <boost/spirit/include/qi_no_case.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 #include <boost/spirit/include/qi_no_case.hpp>
 
@@ -10,6 +11,7 @@ template <typename Iterator>
 TypeSpec<Iterator>::TypeSpec(ErrorHandler<Iterator>& error_handler)
   : TypeSpec::base_type(type_spec), primary_expression(error_handler), balanced_parentheses(error_handler)
 {
+  using boost::spirit::ascii::no_case;
   qi::alpha_type alpha;
   qi::alnum_type alnum;
   qi::string_type string;
@@ -30,15 +32,15 @@ TypeSpec<Iterator>::TypeSpec(ErrorHandler<Iterator>& error_handler)
                             )
                           ;
 
-  type_spec_intrinsic = (  string("integer")
-                         | string("real")
-                         | string("character")
+  type_spec_intrinsic = (  no_case[string("integer")]
+                         | no_case[string("real")]
+                         | no_case[string("character")]
                         )
                         >> -(char_or_kind_selector)
                         ; 
 
-  type_spec_type = (  string("type")
-                    | string("class")
+  type_spec_type = (  no_case[string("type")]
+                    | no_case[string("class")]
                    )
                    >> '('
                    >  (primary_expression.name | string("*"))

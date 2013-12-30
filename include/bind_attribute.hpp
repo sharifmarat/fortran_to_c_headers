@@ -1,6 +1,8 @@
 #ifndef F2H_BIND_ATTRIBUTE_HPP
 #define F2H_BIND_ATTRIBUTE_HPP
 
+#include <boost/spirit/include/qi_no_case.hpp>
+
 #include "error_handler.hpp"
 #include "primary_expression.hpp"
 #include "skipper.hpp"
@@ -17,6 +19,7 @@ struct BindAttribute : qi::grammar<Iterator, std::string(), Skipper<Iterator> >
     : BindAttribute::base_type(bind_attribute), primary_expression(error_handler)
   {
     using qi::lit;
+    using boost::spirit::ascii::no_case;
     qi::string_type string;
     qi::char_type char_;
     qi::_3_type _3;
@@ -24,11 +27,11 @@ struct BindAttribute : qi::grammar<Iterator, std::string(), Skipper<Iterator> >
 
     typedef boost::phoenix::function<ErrorHandler<Iterator> > ErrorHandlerFunction;
 
-    bind_attribute =   string("bind") 
+    bind_attribute =   no_case[string("bind")]
                      > '(' 
-                     > 'c' 
+                     > no_case['c']
                      > -(  ',' 
-                          > lit("name") 
+                          > no_case[lit("name")]
                           > char_('=')
                           > primary_expression.const_char_expr
                         ) 

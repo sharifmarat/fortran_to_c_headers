@@ -1,4 +1,5 @@
 #include "other.hpp"
+#include <boost/spirit/include/qi_no_case.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 #include <boost/spirit/include/qi_no_case.hpp>
 
@@ -11,6 +12,7 @@ template <typename Iterator>
 Other<Iterator>::Other(ErrorHandler<Iterator> & error_handler)
   : Other::base_type(expr)
 {
+  using boost::spirit::ascii::no_case;
   qi::char_type char_;
   qi::alnum_type alnum;
   qi::_1_type _1;
@@ -31,7 +33,7 @@ Other<Iterator>::Other(ErrorHandler<Iterator> & error_handler)
     ;
 
   expr =
-      ((!qi::lexeme[keywords >> !(alnum | '_')] >> +(char_ - qi::eol)) > qi::eol) | qi::eol
+      ((!qi::lexeme[no_case[keywords] >> !(alnum | '_')] >> +(char_ - qi::eol)) > qi::eol) | qi::eol
     ;
 
   qi::on_error<qi::fail>(expr,

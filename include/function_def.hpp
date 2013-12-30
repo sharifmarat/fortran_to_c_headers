@@ -1,4 +1,5 @@
 #include "function.hpp"
+#include <boost/spirit/include/qi_no_case.hpp>
 #include <boost/spirit/include/phoenix_function.hpp>
 #include <boost/spirit/include/qi_no_case.hpp>
 
@@ -9,6 +10,7 @@ template <typename Iterator>
 Function<Iterator>::Function(ErrorHandler<Iterator>& error_handler)
   : Function::base_type(start), type_spec(error_handler), primary_expression(error_handler), bind_attribute(error_handler)
 {
+  using boost::spirit::ascii::no_case;
   using qi::lit;
   qi::alpha_type alpha;
   qi::alnum_type alnum;
@@ -30,14 +32,14 @@ Function<Iterator>::Function(ErrorHandler<Iterator>& error_handler)
 
   argument_list = -(primary_expression.identifier % ',');
 
-  result_prefix = string("result");
+  result_prefix = no_case[string("result")];
 
   result = result_prefix > '(' > primary_expression.identifier > ')';
 
-  start =  *function_attributes
+  start =  *no_case[function_attributes]
         >> -(type_spec)
-        >> *function_attributes
-        >> qi::raw[qi::lexeme[(string("subroutine") | string("function")) >> !(alnum | '_')]]
+        >> *no_case[function_attributes]
+        >> qi::raw[qi::lexeme[(no_case[string("subroutine")] | no_case[string("function")]) >> !(alnum | '_')]]
         >  primary_expression.identifier
         >  -('(' > argument_list > ')')
         >  -(result)
