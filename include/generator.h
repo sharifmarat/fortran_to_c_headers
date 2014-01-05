@@ -20,7 +20,7 @@ public:
   typedef bool result_type;
 
   explicit Generator(const std::string &out_file_name);
-  void Generate(ast::Program const& x, const std::string& define_name);
+  void Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export);
 
   bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::Identifier const& x);

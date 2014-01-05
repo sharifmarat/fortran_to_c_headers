@@ -24,6 +24,7 @@ ProgramResult program(int argc, char **argv)
       ("help,h", "prints this help")
       ("input,i", boost::program_options::value<std::string>(&input_file_name), "input fortran file")
       ("output,o", boost::program_options::value<std::string>(&output_file_name), "generated header file")
+      ("dllexport", "adds __declspec(dllexport) to the generated header file")
       ("define_name,d", boost::program_options::value<std::string>(&define_name)->default_value("RESULT_H"), "define name of generated header")
   ;
 
@@ -51,6 +52,8 @@ ProgramResult program(int argc, char **argv)
     return MISSING_ARGUMENTS;
   }
 
+  bool add_dll_export = vm.count("dllexport") ? true : false;
+
   if (define_name.length() == 0)
   {
     std::cerr << "Define name cannot be empty" << std::endl;
@@ -58,17 +61,17 @@ ProgramResult program(int argc, char **argv)
     return MISSING_ARGUMENTS;
   }
 
-  return program(input_file_name, output_file_name, define_name);
+  return program(input_file_name, output_file_name, define_name, add_dll_export);
 }
 
 
-ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name)
+ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name, bool add_dll_export)
 {
   Parser parser(input_file_name);
   parser.Parse();
 
   Generator generator(output_file_name);
-  generator.Generate(parser.GetAst(), define_name);
+  generator.Generate(parser.GetAst(), define_name, add_dll_export);
 
   return SUCCESS;
 }

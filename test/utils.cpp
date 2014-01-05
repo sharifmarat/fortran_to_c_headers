@@ -43,13 +43,18 @@ void compare_files(const std::string &file_name_1, const std::string &file_name_
   in2.close();
 }
 
-void run_program_and_compare_files(const std::string &in_file, const std::string &expected_out_file)
+void run_program_and_compare_files(const std::string &in_file, const std::string &expected_out_file, bool add_dll_export)
 {
   boost::filesystem::path actual_out_file = boost::filesystem::path(expected_out_file).parent_path() / "result.h";
-  f2h::ProgramResult result = f2h::program(in_file, actual_out_file.string(), "RESULT_H");
+  f2h::ProgramResult result = f2h::program(in_file, actual_out_file.string(), "RESULT_H", add_dll_export);
   ASSERT_EQ(f2h::SUCCESS, result) << "program has not been successfully completed";
 
   compare_files(expected_out_file, actual_out_file.string());
+}
+
+void run_program_and_compare_files(const std::string &in_file, const std::string &expected_out_file)
+{
+  run_program_and_compare_files(in_file, expected_out_file, false);
 }
 
 
