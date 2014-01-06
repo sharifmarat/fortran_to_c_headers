@@ -9,7 +9,8 @@ namespace f2h
 enum ProgramResult
 {
   SUCCESS = 0,
-  MISSING_ARGUMENTS
+  MISSING_ARGUMENTS,
+  ERROR_PARSING_COMMAND_OPTIONS,
 };
 
 ProgramResult program(int argc, char **argv);
