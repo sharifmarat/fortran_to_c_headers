@@ -33,7 +33,8 @@ Other<Iterator>::Other(ErrorHandler<Iterator> & error_handler)
     ;
 
   expr =
-      ((!qi::lexeme[no_case[keywords] >> !(alnum | '_')] >> +(char_ - qi::eol)) > qi::eol) | qi::eol
+        ((!qi::lexeme[no_case[keywords] >> !(alnum | '_')] >> +(char_ - qi::eol - qi::eoi)) > (qi::eol | qi::eoi))
+      | qi::eol 
     ;
 
   qi::on_error<qi::fail>(expr,
