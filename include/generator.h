@@ -14,13 +14,15 @@
 namespace f2h
 {
 
+typedef std::map<std::string, std::string> custom_typedefs_t;
+
 class Generator
 {
 public:
   typedef bool result_type;
 
   explicit Generator(const std::string &out_file_name);
-  void Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export);
+  void Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs);
 
   bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::Identifier const& x);
@@ -63,7 +65,8 @@ private:
     Argument() : type("void"), pointer(true), constant(false), has_c_bind(false) { }
     Argument(const std::string& name) : type("void"), pointer(true), constant(false), name(name), has_c_bind(false) { }
     std::string ToCType() const { return std::string("") + (constant&&pointer?"const ":"") + type + (pointer?"*":""); }
-    std::string ToCTypeWithName() const { return ToCType() + " " + (has_c_bind&&bind_name.length()>0 ? bind_name : name); }
+    std::string ToCTypeWithName() const { return ToCType() + " " + CName(); }
+    std::string CName() const { return has_c_bind&&bind_name.length()>0 ? bind_name : name; }
     void SetArgumentType(const ast::TypeSpec& type_spec);
     void SetArgumentAttribute(const std::string& attribute);
     bool operator==(const std::string& name) { return boost::iequals(this->name, name); }
@@ -95,6 +98,22 @@ private:
 
   Argument& GetOrAddGlobalArgument(const std::string& name);
 
+  struct Typedef
+  {
+    std::string variable_name;
+    std::string real_type_name;
+    std::string alias;
+
+    Typedef(const std::string& variable_name, const std::string& real_type_name, const std::string& alias)
+      : variable_name(variable_name), real_type_name(real_type_name), alias(alias)
+    { }
+    bool operator==(const std::string& name) { return boost::iequals(this->variable_name, name); }
+  };
+
+  inline std::list<Typedef>::iterator RegisterTypedef(const Typedef& t) { return registered_typedefs_.insert(registered_typedefs_.end(), t); }
+
+  void ResolveTypedef(Argument& arg, const custom_typedefs_t::value_type& typedef_input);
+
 private:
   Generator();
 
@@ -103,6 +122,7 @@ private:
   mutable std::ofstream out_;
   std::list<Function> functions_;
   std::list<Argument> globals_;
+  std::list<Typedef> registered_typedefs_;
 };
 
 

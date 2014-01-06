@@ -15,7 +15,7 @@ Generator::Generator(const std::string &out_file_name)
 {
 }
 
-void Generator::Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export)
+void Generator::Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs)
 {
   // process grammar
   (*this)(x);
@@ -31,6 +31,28 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name, 
   std::string dll_export = add_dll_export ? "__declspec(dllexport) " : "";
 
   DumpHeaderStart(define_name);
+
+  BOOST_FOREACH (const custom_typedefs_t::value_type& typedef_input, typedefs)
+  {
+    BOOST_FOREACH (Argument& arg, globals_)
+    {
+      ResolveTypedef(arg, typedef_input);
+    }
+
+    BOOST_FOREACH (Function& function, functions_)
+    {
+      BOOST_FOREACH (Argument& arg, function.argument_list)
+      {
+        ResolveTypedef(arg, typedef_input);
+      }
+    }
+  }
+
+  // generate typedefs
+  BOOST_FOREACH (const Typedef& t, registered_typedefs_)
+  {
+    out_ << "typedef " << t.real_type_name << " " << t.alias << ";\n\n";
+  }
 
   // output global variables
   for (std::list<Argument>::const_iterator it = globals_.begin(); it != globals_.end(); ++it)
@@ -56,6 +78,24 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name, 
   DumpHeaderEnd(define_name);
 
   out_.close();
+}
+
+void Generator::ResolveTypedef(Argument& arg, const custom_typedefs_t::value_type& typedef_input)
+{
+  if (!boost::iequals(arg.CName(), typedef_input.first)) return;
+
+  std::list<Typedef>::iterator it = std::find(registered_typedefs_.begin(), registered_typedefs_.end(), arg.CName());
+
+  if (it == registered_typedefs_.end())
+  {
+    it = RegisterTypedef(Typedef(arg.CName(), arg.ToCType(), typedef_input.second));
+  }
+  else if ((*it).real_type_name != arg.ToCType())
+  {
+    throw AmbiguousTypedefException();
+  }
+
+  arg.type = (*it).alias;
 }
 
 bool Generator::operator()(ast::Identifier const& x)

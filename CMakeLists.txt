@@ -26,14 +26,14 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_definitions(-DBOOST_SPIRIT_DEBUG -DBOOST_SPIRIT_DEBUG_PRINT_SOME=150)
 endif()
 
-if (CMAKE_COMPILER_IS_GNUCXX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
-endif()
+#if (CMAKE_COMPILER_IS_GNUCXX)
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+#endif()
 
 # build library
 file(GLOB_RECURSE LIBRARY_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 message(STATUS "library sources = ${LIBRARY_SOURCES}")
-add_library(${LIBRARY} SHARED ${LIBRARY_SOURCES})
+add_library(${LIBRARY} STATIC ${LIBRARY_SOURCES})
 target_link_libraries(${LIBRARY} ${Boost_LIBRARIES} )
 
 

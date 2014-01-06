@@ -18,6 +18,10 @@ class UnableToOpenFileForReadingException : public std::exception
 {
 };
 
+class AmbiguousTypedefException : public std::exception
+{
+};
+
 }
 
 
