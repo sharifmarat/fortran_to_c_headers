@@ -16,7 +16,7 @@ Generator::Generator(const std::string &out_file_name)
 {
 }
 
-void Generator::Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool omit_comments)
+void Generator::Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool omit_comments, bool add_extern)
 {
   // process grammar
   (*this)(x);
@@ -30,6 +30,7 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name, 
   }
 
   std::string dll_export = add_dll_export ? "__declspec(dllexport) " : "";
+  std::string extern_str = add_extern ? "extern " : "";
 
   DumpHeaderStart(define_name, omit_comments);
 
@@ -58,7 +59,7 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name, 
   // output global variables
   for (std::list<Argument>::const_iterator it = globals_.begin(); it != globals_.end(); ++it)
   {
-    if ((*it).has_c_bind) out_ << dll_export << (*it).ToCTypeWithName() << ";\n\n";
+    if ((*it).has_c_bind) out_ << extern_str << dll_export << (*it).ToCTypeWithName() << ";\n\n";
   }
 
   // output functions
@@ -66,7 +67,7 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name, 
   {
     const Function& function = *it;
     if (!function.has_c_bind) continue;
-    out_ << dll_export << function.return_value.ToCType() << " " << function.GetName() << "(";
+    out_ << extern_str << dll_export << function.return_value.ToCType() << " " << function.GetName() << "(";
     for (std::list<Argument>::const_iterator argument_it = function.argument_list.begin(); argument_it != function.argument_list.end(); ++argument_it)
     {
       if (argument_it != function.argument_list.begin()) out_ << ", ";
