@@ -22,7 +22,7 @@ public:
   typedef bool result_type;
 
   explicit Generator(const std::string &out_file_name);
-  void Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs);
+  void Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool omit_comments);
 
   bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::Identifier const& x);
@@ -42,7 +42,7 @@ private:
     return bind_attribute.length() > bind_prefix.length() ? bind_attribute.substr(bind_prefix.length()) : "";
   }
 
-  void DumpHeaderStart(const std::string& define_name) const;
+  void DumpHeaderStart(const std::string& define_name, bool omit_comments) const;
   void DumpHeaderEnd(const std::string& define_name) const;
   std::string GetDefineName() const;
 

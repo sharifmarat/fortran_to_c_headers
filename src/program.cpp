@@ -9,6 +9,7 @@
 
 #include "parser.h"
 #include "generator.h"
+#include "version.h"
 
 namespace f2h
 {
@@ -33,6 +34,8 @@ ProgramResult program(int argc, char **argv)
                           "Allows to specify typedefs for a variable.  Example: `--custom-typedefs var1=var1_t var2=var2_t'"
                           "will change the type of variable var1 to var1_t and var2 to var2_t.")
       ("define_name,d", po::value<std::string>(&define_name)->default_value("RESULT_H"), "define name of generated header")
+      ("omit-comments", po::bool_switch()->default_value(false), "Omits comments on the top of generated header")
+      ("version,v", po::bool_switch()->default_value(false), "prints the version")
   ;
 
   po::variables_map vm;
@@ -54,6 +57,12 @@ ProgramResult program(int argc, char **argv)
     return SUCCESS;
   }
 
+  if (vm["version"].as<bool>())
+  {
+    std::cout << GetVersionString() << std::endl;
+    return SUCCESS;
+  }
+
   try
   {
     po::notify(vm);
@@ -64,8 +73,6 @@ ProgramResult program(int argc, char **argv)
     std::cerr << "Try --help for more information." << std::endl;
     return MISSING_ARGUMENTS;
   }
-
-  bool add_dll_export = vm["dllexport"].as<bool>();
 
   BOOST_FOREACH(const std::string& custom_typedef, custom_typedefs_input)
   {
@@ -86,17 +93,20 @@ ProgramResult program(int argc, char **argv)
     return MISSING_ARGUMENTS;
   }
 
-  return program(input_file_name, output_file_name, define_name, add_dll_export, custom_typedefs);
+  bool add_dll_export = vm["dllexport"].as<bool>();
+  bool ommit_comments = vm["omit-comments"].as<bool>();
+
+  return program(input_file_name, output_file_name, define_name, add_dll_export, custom_typedefs, ommit_comments);
 }
 
 
-ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name, bool add_dll_export, const custom_typedefs_t& typedefs)
+ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool ommit_comments)
 {
   Parser parser(input_file_name);
   parser.Parse();
 
   Generator generator(output_file_name);
-  generator.Generate(parser.GetAst(), define_name, add_dll_export, typedefs);
+  generator.Generate(parser.GetAst(), define_name, add_dll_export, typedefs, ommit_comments);
 
   return SUCCESS;
 }
