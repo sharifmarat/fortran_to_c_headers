@@ -30,7 +30,7 @@ ProgramResult program(int argc, char **argv)
       ("input,i", po::value<std::string>(&input_file_name)->required(), "input fortran file")
       ("output,o", po::value<std::string>(&output_file_name)->required(), "generated header file")
       ("define_name,d", po::value<std::string>(&define_name)->default_value("RESULT_H"), "define name of generated header")
-      ("add-dllexport", po::bool_switch()->default_value(false), "adds __declspec(dllexport) to the generated header file")
+      ("add-dllimport", po::bool_switch()->default_value(false), "adds __declspec(dllimport) to the generated header file")
       ("add-extern", po::bool_switch()->default_value(false), "adds extern for all variables and functions to the generated header file")
       ("custom-typedefs", po::value<std::vector<std::string> >(&custom_typedefs_input)->multitoken(),
                           "Allows to specify typedefs for a variable.  Example: `--custom-typedefs var1=var1_t var2=var2_t'"
@@ -94,21 +94,21 @@ ProgramResult program(int argc, char **argv)
     return MISSING_ARGUMENTS;
   }
 
-  bool add_dll_export = vm["add-dllexport"].as<bool>();
+  bool add_dll_import = vm["add-dllimport"].as<bool>();
   bool ommit_comments = vm["omit-comments"].as<bool>();
   bool add_extern = vm["add-extern"].as<bool>();
 
-  return program(input_file_name, output_file_name, define_name, add_dll_export, custom_typedefs, ommit_comments, add_extern);
+  return program(input_file_name, output_file_name, define_name, add_dll_import, custom_typedefs, ommit_comments, add_extern);
 }
 
 
-ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool ommit_comments, bool add_extern)
+ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name, bool add_dll_import, const custom_typedefs_t& typedefs, bool ommit_comments, bool add_extern)
 {
   Parser parser(input_file_name);
   parser.Parse();
 
   Generator generator(output_file_name);
-  generator.Generate(parser.GetAst(), define_name, add_dll_export, typedefs, ommit_comments, add_extern);
+  generator.Generate(parser.GetAst(), define_name, add_dll_import, typedefs, ommit_comments, add_extern);
 
   return SUCCESS;
 }

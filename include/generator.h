@@ -22,7 +22,7 @@ public:
   typedef bool result_type;
 
   explicit Generator(const std::string &out_file_name);
-  void Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool omit_comments, bool add_extern);
+  void Generate(ast::Program const& x, const std::string& define_name, bool add_dll_import, const custom_typedefs_t& typedefs, bool omit_comments, bool add_extern);
 
   bool operator()(ast::Nil) { BOOST_ASSERT(0); return false; }
   bool operator()(ast::Identifier const& x);
@@ -60,11 +60,12 @@ private:
     std::string type;
     bool pointer;
     bool constant;
+    bool parameter;
     bool has_c_bind;
 
-    Argument() : type("void"), pointer(true), constant(false), has_c_bind(false) { }
-    Argument(const std::string& name) : type("void"), pointer(true), constant(false), name(name), has_c_bind(false) { }
-    std::string ToCType() const { return std::string("") + (constant&&pointer?"const ":"") + type + (pointer?"*":""); }
+    Argument() : type("void"), pointer(true), constant(false), has_c_bind(false), parameter(false) { }
+    Argument(const std::string& name) : type("void"), pointer(true), constant(false), name(name), has_c_bind(false), parameter(false) { }
+    std::string ToCType() const { return std::string("") + (constant&&pointer||parameter?"const ":"") + type + (pointer?"*":""); }
     std::string ToCTypeWithName() const { return ToCType() + " " + CName(); }
     std::string CName() const { return has_c_bind&&bind_name.length()>0 ? bind_name : name; }
     void SetArgumentType(const ast::TypeSpec& type_spec);

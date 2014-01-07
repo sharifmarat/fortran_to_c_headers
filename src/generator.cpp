@@ -16,7 +16,7 @@ Generator::Generator(const std::string &out_file_name)
 {
 }
 
-void Generator::Generate(ast::Program const& x, const std::string& define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool omit_comments, bool add_extern)
+void Generator::Generate(ast::Program const& x, const std::string& define_name, bool add_dll_import, const custom_typedefs_t& typedefs, bool omit_comments, bool add_extern)
 {
   // process grammar
   (*this)(x);
@@ -29,7 +29,7 @@ void Generator::Generate(ast::Program const& x, const std::string& define_name, 
     throw UnableToOpenFileForWritingException();
   }
 
-  std::string dll_export = add_dll_export ? "__declspec(dllexport) " : "";
+  std::string dll_export = add_dll_import ? "__declspec(dllimport) " : "";
   std::string extern_str = add_extern ? "extern " : "";
 
   DumpHeaderStart(define_name, omit_comments);
@@ -238,6 +238,10 @@ void Generator::Argument::SetArgumentAttribute(const std::string& attribute)
   if (boost::iequals(attribute, "value")) 
   {
     this->pointer = false;
+  }
+  if (boost::iequals(attribute, "parameter")) 
+  {
+    this->parameter = true;
   }
   else if (boost::iequals(attribute, "intentin"))
   {

@@ -18,7 +18,7 @@ enum ProgramResult
 
 ProgramResult program(int argc, char **argv);
 
-ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name, bool add_dll_export, const custom_typedefs_t& typedefs, bool ommit_comments, bool add_extern);
+ProgramResult program(const std::string &input_file_name, const std::string &output_file_name, const std::string &define_name, bool add_dll_import, const custom_typedefs_t& typedefs, bool ommit_comments, bool add_extern);
 
 }
 
