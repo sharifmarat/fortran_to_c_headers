@@ -45,7 +45,7 @@ VariableDeclaration<Iterator>::VariableDeclaration(ErrorHandler<Iterator>& error
               | no_case[string("contiguous")]
               | (no_case[string("dimension")] >> -(balanced_parentheses))
               | no_case[string("external")]
-              | (no_case[string("intent")] >> '(' >> (no_case[string("in")] | no_case[string("out")] | no_case[string("inout")]) >> ')')
+              | (no_case[string("intent")] >> '(' >> (no_case[string("inout")] | no_case[string("in")] | no_case[string("out")]) >> ')')
               | no_case[string("external")]
               | no_case[string("intrinsic")]
               | no_case[string("optional")]
